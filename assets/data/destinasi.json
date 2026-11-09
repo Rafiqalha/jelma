@@ -1,0 +1,156 @@
+{
+  "versi": 1,
+  "keterangan": "Data contoh (dummy) untuk UTS Mobile Programming. Struktur dibuat agar dapat diganti dengan respons API.",
+  "kategori": [
+    { "id": "alam", "nama": "Alam", "ikon": "terrain" },
+    { "id": "budaya", "nama": "Budaya", "ikon": "museum" },
+    { "id": "kuliner", "nama": "Kuliner", "ikon": "restaurant" },
+    { "id": "edukasi", "nama": "Edukasi", "ikon": "school" }
+  ],
+  "destinasi": [
+    {
+      "id": 1,
+      "nama": "Coban Rondo",
+      "kategori": "alam",
+      "lokasi": "Pujon, Kabupaten Malang",
+      "deskripsi": "Air terjun yang dikelilingi hutan pinus dan udara sejuk. Cocok untuk berjalan santai bersama keluarga sambil menikmati pemandangan pegunungan.",
+      "rating": 4.5,
+      "harga": 35000,
+      "jam_buka": "07.00 - 16.00",
+      "fasilitas": ["Parkir", "Toilet", "Musala", "Warung makan"],
+      "populer": true
+    },
+    {
+      "id": 2,
+      "nama": "Pantai Balekambang",
+      "kategori": "alam",
+      "lokasi": "Bantur, Kabupaten Malang",
+      "deskripsi": "Pantai berpasir dengan pulau karang kecil yang terhubung jembatan. Terkenal dengan panorama matahari terbenam dan ombak yang memukau.",
+      "rating": 4.6,
+      "harga": 20000,
+      "jam_buka": "06.00 - 17.00",
+      "fasilitas": ["Parkir", "Toilet", "Penginapan", "Warung makan"],
+      "populer": true
+    },
+    {
+      "id": 3,
+      "nama": "Coban Pelangi",
+      "kategori": "alam",
+      "lokasi": "Tumpang, Kabupaten Malang",
+      "deskripsi": "Air terjun di tengah perbukitan yang kerap menampilkan bias pelangi saat cuaca cerah. Jalur menuju lokasi cukup singkat dan mudah dilalui.",
+      "rating": 4.4,
+      "harga": 15000,
+      "jam_buka": "07.00 - 16.00",
+      "fasilitas": ["Parkir", "Toilet", "Gazebo"],
+      "populer": false
+    },
+    {
+      "id": 4,
+      "nama": "Kampung Warna-Warni Jodipan",
+      "kategori": "budaya",
+      "lokasi": "Jodipan, Kota Malang",
+      "deskripsi": "Perkampungan tepi sungai dengan rumah-rumah yang dicat berwarna cerah. Menjadi contoh penataan kampung kota yang kreatif dan ramah pengunjung.",
+      "rating": 4.3,
+      "harga": 5000,
+      "jam_buka": "08.00 - 17.00",
+      "fasilitas": ["Parkir", "Toilet", "Spot foto"],
+      "populer": true
+    },
+    {
+      "id": 5,
+      "nama": "Candi Singosari",
+      "kategori": "budaya",
+      "lokasi": "Singosari, Kabupaten Malang",
+      "deskripsi": "Candi peninggalan Kerajaan Singasari yang menjadi salah satu situs sejarah penting di Malang Raya. Halamannya luas dan tertata rapi.",
+      "rating": 4.2,
+      "harga": 5000,
+      "jam_buka": "07.00 - 16.00",
+      "fasilitas": ["Parkir", "Toilet", "Pemandu"],
+      "populer": false
+    },
+    {
+      "id": 6,
+      "nama": "Museum Brawijaya",
+      "kategori": "budaya",
+      "lokasi": "Klojen, Kota Malang",
+      "deskripsi": "Museum sejarah perjuangan yang menyimpan koleksi senjata, foto, dan dokumen. Cocok untuk belajar sejarah secara santai di pusat kota.",
+      "rating": 4.4,
+      "harga": 10000,
+      "jam_buka": "08.00 - 16.00",
+      "fasilitas": ["Parkir", "Toilet", "Pemandu", "Ruang pamer"],
+      "populer": false
+    },
+    {
+      "id": 7,
+      "nama": "Bakso Malang",
+      "kategori": "kuliner",
+      "lokasi": "Berbagai sudut Kota Malang",
+      "deskripsi": "Bakso dengan isian pangsit goreng, tahu, dan mi kuning dalam kuah kaldu yang gurih. Hidangan khas yang mudah ditemukan di seluruh kota.",
+      "rating": 4.7,
+      "harga": 15000,
+      "jam_buka": "09.00 - 21.00",
+      "fasilitas": ["Makan di tempat", "Dibawa pulang"],
+      "populer": true
+    },
+    {
+      "id": 8,
+      "nama": "Cwie Mie Malang",
+      "kategori": "kuliner",
+      "lokasi": "Kota Malang",
+      "deskripsi": "Mi kenyal bertabur daging cincang dan acar, disajikan bersama pangsit dan kuah bening. Rasanya ringan sehingga cocok untuk sarapan.",
+      "rating": 4.5,
+      "harga": 18000,
+      "jam_buka": "08.00 - 20.00",
+      "fasilitas": ["Makan di tempat", "Dibawa pulang"],
+      "populer": false
+    },
+    {
+      "id": 9,
+      "nama": "Rawon Khas Jawa Timur",
+      "kategori": "kuliner",
+      "lokasi": "Kota Malang",
+      "deskripsi": "Sup daging sapi berkuah hitam dari kluwek yang disajikan dengan tauge pendek, telur asin, dan sambal. Hidangan hangat yang kaya rempah.",
+      "rating": 4.6,
+      "harga": 25000,
+      "jam_buka": "10.00 - 21.00",
+      "fasilitas": ["Makan di tempat", "Dibawa pulang", "Parkir"],
+      "populer": false
+    },
+    {
+      "id": 10,
+      "nama": "Museum Angkut",
+      "kategori": "edukasi",
+      "lokasi": "Batu, Kota Batu",
+      "deskripsi": "Museum transportasi dengan koleksi kendaraan dari berbagai zaman dan area bertema negara. Menarik untuk belajar sambil berfoto.",
+      "rating": 4.6,
+      "harga": 100000,
+      "jam_buka": "12.00 - 20.00",
+      "fasilitas": ["Parkir", "Toilet", "Musala", "Restoran"],
+      "populer": true
+    },
+    {
+      "id": 11,
+      "nama": "Jatim Park 1",
+      "kategori": "edukasi",
+      "lokasi": "Batu, Kota Batu",
+      "deskripsi": "Taman rekreasi edukasi dengan wahana sains interaktif untuk anak-anak dan keluarga. Pengunjung dapat bermain sambil belajar konsep dasar sains.",
+      "rating": 4.5,
+      "harga": 90000,
+      "jam_buka": "09.00 - 17.00",
+      "fasilitas": ["Parkir", "Toilet", "Musala", "Restoran", "Loker"],
+      "populer": false
+    },
+    {
+      "id": 12,
+      "nama": "Museum Musik Indonesia",
+      "kategori": "edukasi",
+      "lokasi": "Klojen, Kota Malang",
+      "deskripsi": "Museum yang menampilkan perjalanan musik Indonesia melalui koleksi piringan hitam, alat musik, dan memorabilia para musisi.",
+      "rating": 4.3,
+      "harga": 25000,
+      "jam_buka": "09.00 - 16.00",
+      "fasilitas": ["Parkir", "Toilet", "Ruang pamer"],
+      "populer": false
+    }
+  ]
+}
