@@ -1,8 +1,7 @@
 # Jelajah Malang (JELMA)
 
-Aplikasi katalog destinasi wisata Malang Raya yang dibuat dengan Flutter untuk mata kuliah
-**Mobile Programming**. Aplikasi ini berawal dari tugas **Ujian Tengah Semester (UTS)** dan
-repositori ini dikumpulkan pada **Ujian Akhir Semester (UAS)**. Repositori berdiri sendiri,
+Aplikasi katalog destinasi wisata Malang Raya yang dibuat dengan Flutter sebagai
+tugas **Ujian Tengah Semester (UTS) Mobile Programming**. Repositori ini berdiri sendiri,
 terpisah dari tugas modul praktikum lainnya.
 
 | Identitas | Keterangan |
