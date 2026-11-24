@@ -7,9 +7,14 @@ import '../state/lokasi_store.dart';
 import '../state/notifikasi_store.dart';
 import '../state/pengaturan_store.dart';
 import '../state/store_scope.dart';
+import '../widgets/logo_jelma.dart';
 import '../widgets/panel_izin_lokasi.dart';
 
-/// Halaman Pengaturan: sumber lokasi, radius pencarian, notifikasi, dan keterangan sumber data.
+/// Versi yang ditampilkan; sama dengan `version` pada pubspec.yaml.
+const String _versiAplikasi = '2.1.0';
+
+/// Halaman Pengaturan: tentang aplikasi dan kredit foto, sumber lokasi, radius pencarian,
+/// notifikasi, dan keterangan sumber data.
 class PengaturanPage extends StatefulWidget {
   const PengaturanPage({super.key});
 
@@ -64,6 +69,45 @@ class _PengaturanPageState extends State<PengaturanPage> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const MerekJelma(),
+                      const Spacer(),
+                      Text('Versi $_versiAplikasi', style: tema.textTheme.labelMedium?.copyWith(color: skema.onSurfaceVariant)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Jelajah Malang: katalog destinasi Malang Raya dengan lokasi, cuaca, dan rencana kunjungan.',
+                    style: tema.textTheme.bodyMedium?.copyWith(color: skema.onSurfaceVariant),
+                  ),
+                  const SizedBox(height: 4),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.photo_library_outlined),
+                    title: const Text('Kredit foto'),
+                    subtitle: const Text('Pembuat, lisensi, dan sumber setiap foto destinasi'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => Navigator.pushNamed(context, '/kredit-foto'),
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.slideshow_outlined),
+                    title: const Text('Lihat pengenalan lagi'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => Navigator.pushNamed(context, '/pengenalan'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           _Bagian(
             ikon: Icons.my_location,
             judul: 'Lokasi',
@@ -198,6 +242,7 @@ class _PengaturanPageState extends State<PengaturanPage> {
                 Text(
                   'Cuaca: Open-Meteo.com (lisensi CC BY 4.0).\n'
                   'Koordinat destinasi dan area acuan: OpenStreetMap contributors (lisensi ODbL).\n'
+                  'Foto destinasi: Wikimedia Commons, lihat Kredit foto.\n'
                   'Rating, harga, dan jam buka pada katalog adalah data contoh.',
                   style: tema.textTheme.bodySmall?.copyWith(color: skema.onSurfaceVariant, height: 1.5),
                 ),

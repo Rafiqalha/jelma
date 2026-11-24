@@ -10,8 +10,9 @@ import '../state/katalog_store.dart';
 import '../state/lokasi_store.dart';
 import '../state/rencana_store.dart';
 import '../state/store_scope.dart';
+import '../navigasi.dart';
 import '../widgets/chip_saran.dart';
-import '../widgets/gambar_kategori.dart';
+import '../widgets/gambar_destinasi.dart';
 import '../widgets/ikon_cuaca.dart';
 import '../widgets/keadaan_halaman.dart';
 import 'rencana_form_page.dart';
@@ -258,10 +259,11 @@ class _BarisStop extends StatelessWidget {
         ? destinasi.lokasi
         : 'Sekitar ${formatJarak(ruasKm!)} $asal';
 
+    final tag = tagFoto('rute', destinasi);
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => Navigator.pushNamed(context, '/detail', arguments: destinasi),
+        onTap: () => bukaDetail(context, destinasi, heroTag: tag),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -272,10 +274,9 @@ class _BarisStop extends StatelessWidget {
                 child: Text('$nomor', style: tema.textTheme.labelLarge?.copyWith(color: skema.onPrimary)),
               ),
               const SizedBox(width: 12),
-              SizedBox(
-                width: 48,
-                height: 48,
-                child: GambarKategori(kategori: destinasi.kategori, ukuranIkon: 24, radius: BorderRadius.circular(12)),
+              SizedBox.square(
+                dimension: 56,
+                child: GambarDestinasi(destinasi: destinasi, heroTag: tag, ukuranIkon: 24, radius: BorderRadius.circular(14)),
               ),
               const SizedBox(width: 12),
               Expanded(

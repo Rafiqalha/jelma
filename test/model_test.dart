@@ -121,6 +121,22 @@ void main() {
       expect(cobanUji.jarakDari(null), isNull);
       expect(cobanUji.jarakDari(posisiUji), greaterThan(10));
     });
+
+    test('foto dibaca beserta kreditnya; destinasi tanpa foto bernilai null', () {
+      final d = Destinasi.fromJson(cobanUji.toJson());
+      expect(d.foto?.berkas, 'assets/images/destinasi/01-coban-rondo.jpg');
+      expect(d.foto?.kredit, 'Foto: Penulis Uji, CC BY-SA 4.0');
+      expect(d.foto?.sumber, startsWith('https://commons.wikimedia.org/wiki/File:'));
+      expect(d.foto?.dariJaringan, isFalse);
+      expect(Destinasi.fromJson(baksoUji.toJson()).foto, isNull);
+    });
+
+    test('foto beralamat https dianggap dari jaringan dan kolom kosong diberi nilai bawaan', () {
+      final foto = FotoDestinasi.fromJson({'berkas': 'https://contoh.test/foto.jpg'});
+      expect(foto.dariJaringan, isTrue);
+      expect(foto.penulis, 'Tanpa nama');
+      expect(foto.lisensi, isEmpty);
+    });
   });
 
   group('KondisiCuaca', () {

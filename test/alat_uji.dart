@@ -32,6 +32,14 @@ const Destinasi cobanUji = Destinasi(
   koordinat: Koordinat(-7.86962, 112.48397),
   ruang: Ruang.terbuka,
   populer: true,
+  foto: FotoDestinasi(
+    berkas: 'assets/images/destinasi/01-coban-rondo.jpg',
+    judul: 'Coban rondo waterfall.jpg',
+    penulis: 'Penulis Uji',
+    lisensi: 'CC BY-SA 4.0',
+    urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0',
+    sumber: 'https://commons.wikimedia.org/wiki/File:Coban_rondo_waterfall.jpg',
+  ),
 );
 
 const Destinasi baksoUji = Destinasi(
@@ -64,7 +72,7 @@ const Destinasi museumUji = Destinasi(
 );
 
 const KatalogDestinasi katalogUji = KatalogDestinasi(
-  versi: 2,
+  versi: 3,
   kategori: [
     Kategori(id: 'alam', nama: 'Alam', ikon: 'terrain'),
     Kategori(id: 'kuliner', nama: 'Kuliner', ikon: 'restaurant'),
@@ -234,6 +242,9 @@ class NotifikasiPalsu implements NotifikasiService {
 }
 
 /// Membuat [LayananAplikasi] tiruan dengan penyimpanan kosong atau berisi [awal].
+///
+/// Pengenalan dianggap sudah selesai kecuali [onboardingSelesai] bernilai false, agar pengujian
+/// halaman lain langsung membuka kerangka utama.
 Future<LayananAplikasi> buatLayanan({
   LokasiPalsu? lokasi,
   CuacaPalsu? cuaca,
@@ -241,8 +252,9 @@ Future<LayananAplikasi> buatLayanan({
   Map<String, Object> awal = const {},
   List<Uri>? tautanDibuka,
   bool tautanBerhasil = true,
+  bool onboardingSelesai = true,
 }) async {
-  SharedPreferences.setMockInitialValues(awal);
+  SharedPreferences.setMockInitialValues({'onboarding_selesai': onboardingSelesai, ...awal});
   return LayananAplikasi(
     penyimpanan: await SharedPreferences.getInstance(),
     lokasi: lokasi ?? LokasiPalsu(),
@@ -254,6 +266,15 @@ Future<LayananAplikasi> buatLayanan({
       return tautanBerhasil;
     },
   );
+}
+
+/// Memperpanjang layar uji menjadi 360 x 1600 dp agar semua kartu berfoto besar terlihat sekaligus.
+///
+/// Pencari bawaan hanya menemukan widget yang benar-benar tampil di layar, sedangkan kartu Jelajah
+/// kini setinggi sekitar 300 dp.
+Future<void> layarTinggi(WidgetTester tester) async {
+  tester.view.physicalSize = const Size(1080, 4800);
+  await tester.pumpAndSettle();
 }
 
 /// Membuka aplikasi pada layar seukuran ponsel (360 x 800 dp) dan menunggu hingga semua pemuatan selesai.

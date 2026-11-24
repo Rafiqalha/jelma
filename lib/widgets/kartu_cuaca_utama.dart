@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../models/cuaca.dart';
 import 'ikon_cuaca.dart';
 
-/// Kartu utama halaman Cuaca: kondisi sekarang di satu lokasi, dengan gradasi yang sama dengan header Beranda.
+/// Kartu utama halaman Cuaca: kondisi sekarang di satu lokasi.
 ///
-/// Gradasi dan teks putih dipilih sebagai titik fokus halaman; kontras putih pada ujung terang
-/// gradasi (#00796B) adalah 5,3:1 dan pada ujung gelap lebih tinggi.
+/// Bidang hijau pinus padat dengan teks putih (7,06:1) menjadi titik fokus halaman, warnanya sama
+/// dengan ikon aplikasi dan splash.
 class KartuCuacaUtama extends StatelessWidget {
   const KartuCuacaUtama({
     super.key,
@@ -35,14 +35,7 @@ class KartuCuacaUtama extends StatelessWidget {
       label: 'Cuaca di $lokasi: ${kondisi.label}, ${kini.suhu.round()} derajat Celsius',
       child: Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [skema.primary, Color.lerp(skema.primary, Colors.black, 0.32)!],
-          ),
-          borderRadius: BorderRadius.circular(24),
-        ),
+        decoration: BoxDecoration(color: skema.primary, borderRadius: BorderRadius.circular(24)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

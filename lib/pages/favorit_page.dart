@@ -26,12 +26,7 @@ class FavoritPage extends StatelessWidget {
               judul: 'Belum ada favorit',
               pesan: 'Ketuk ikon hati pada destinasi untuk menyimpannya di sini.',
             )
-          : ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              itemCount: daftar.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (context, i) => DestinasiCard(destinasi: daftar[i]),
-            ),
+          : DaftarKartuDestinasi(daftar: daftar, asalHero: 'favorit'),
     );
   }
 }

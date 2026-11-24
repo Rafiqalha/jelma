@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/destinasi_repository.dart';
+import '../models/destinasi.dart';
 import '../models/format.dart';
 import '../models/rencana.dart';
 import '../models/saran_cuaca.dart';
@@ -9,6 +10,7 @@ import '../state/lokasi_store.dart';
 import '../state/rencana_store.dart';
 import '../state/store_scope.dart';
 import '../widgets/chip_saran.dart';
+import '../widgets/gambar_destinasi.dart';
 import '../widgets/keadaan_halaman.dart';
 import '../widgets/tombol_pengaturan.dart';
 
@@ -29,13 +31,7 @@ class RencanaPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Rencana'), actions: const [TombolPengaturan()]),
-      floatingActionButton: store.daftar.isEmpty
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: () => _buat(context),
-              icon: const Icon(Icons.add),
-              label: const Text('Buat rencana'),
-            ),
+      // Tombol Buat rencana untuk daftar yang sudah berisi dipasang di ShellPage.
       body: store.daftar.isEmpty
           ? KeadaanHalaman(
               ikon: Icons.event_note,
@@ -85,6 +81,47 @@ class _JudulBagian extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
       child: Text(teks, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+    );
+  }
+}
+
+/// Foto kecil destinasi dalam satu rencana, bertumpuk seperti deret avatar; paling banyak empat.
+class _TumpukanFoto extends StatelessWidget {
+  const _TumpukanFoto({required this.tujuan});
+
+  final List<Destinasi> tujuan;
+
+  @override
+  Widget build(BuildContext context) {
+    const ukuran = 32.0;
+    final tampil = tujuan.take(4).toList();
+    final sisa = tujuan.length - tampil.length;
+    return ExcludeSemantics(
+      child: SizedBox(
+        height: ukuran,
+        width: ukuran + (tampil.length - 1) * 22 + (sisa > 0 ? 40 : 0),
+        child: Stack(
+          children: [
+            for (var i = 0; i < tampil.length; i++)
+              Positioned(
+                left: i * 22,
+                child: Container(
+                  width: ukuran,
+                  height: ukuran,
+                  padding: const EdgeInsets.all(2),
+                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                  child: ClipOval(child: GambarDestinasi(destinasi: tampil[i], ukuranIkon: 14)),
+                ),
+              ),
+            if (sisa > 0)
+              Positioned(
+                left: tampil.length * 22 + 14,
+                top: 6,
+                child: Text('+$sisa', style: Theme.of(context).textTheme.labelMedium),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -161,6 +198,10 @@ class _KartuRencana extends StatelessWidget {
                           : '${tujuan.length} destinasi, rute sekitar ${formatJarak(total)}',
                       style: tema.textTheme.bodySmall?.copyWith(color: skema.onSurfaceVariant),
                     ),
+                    if (tujuan.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      _TumpukanFoto(tujuan: tujuan),
+                    ],
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,

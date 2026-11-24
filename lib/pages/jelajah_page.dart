@@ -28,6 +28,7 @@ class JelajahPage extends StatefulWidget {
     required this.katalog,
     required this.kategoriTerpilih,
     required this.onKategoriBerubah,
+    this.permintaanCari = 0,
   });
 
   final KatalogDestinasi katalog;
@@ -36,12 +37,16 @@ class JelajahPage extends StatefulWidget {
   final String kategoriTerpilih;
   final ValueChanged<String> onKategoriBerubah;
 
+  /// Bertambah setiap kali kolom cari di Beranda diketuk; kolom cari halaman ini lalu langsung aktif.
+  final int permintaanCari;
+
   @override
   State<JelajahPage> createState() => _JelajahPageState();
 }
 
 class _JelajahPageState extends State<JelajahPage> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _fokusCari = FocusNode();
   final Map<String, GlobalKey> _kunciChip = {};
   String _kata = '';
   UrutanDaftar _urutan = UrutanDaftar.katalog;
@@ -51,6 +56,12 @@ class _JelajahPageState extends State<JelajahPage> {
   void didUpdateWidget(JelajahPage lama) {
     super.didUpdateWidget(lama);
     if (lama.kategoriTerpilih != widget.kategoriTerpilih) _tampilkanChipTerpilih();
+    if (lama.permintaanCari != widget.permintaanCari) {
+      // Pengguna mengetuk kolom cari di Beranda, jadi keyboard langsung siap untuk mengetik.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _fokusCari.requestFocus();
+      });
+    }
   }
 
   /// Menggulirkan deretan chip agar chip kategori yang dipilih tidak terpotong di tepi layar.
@@ -71,6 +82,7 @@ class _JelajahPageState extends State<JelajahPage> {
   @override
   void dispose() {
     _controller.dispose();
+    _fokusCari.dispose();
     super.dispose();
   }
 
@@ -124,155 +136,138 @@ class _JelajahPageState extends State<JelajahPage> {
     final lokasi = StoreScope.of<LokasiStore>(context);
     final hasil = _hasil(context);
     final bisaUrutJarak = lokasi.aktif != null;
+    // Kolom cari dan penyaring ikut tergulung bersama daftar, sehingga di layar pendek (mode lanskap)
+    // kartu tetap mendapat ruang setelah pengguna menggulir.
     return Scaffold(
       appBar: AppBar(title: const Text('Jelajah'), actions: const [TombolPengaturan()]),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: TextField(
-              controller: _controller,
-              onChanged: (v) => setState(() => _kata = v),
-              textInputAction: TextInputAction.search,
-              decoration: InputDecoration(
-                labelText: 'Cari nama atau lokasi',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _kata.isEmpty
-                    ? null
-                    : IconButton(
-                        tooltip: 'Hapus kata kunci',
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _controller.clear();
-                          setState(() => _kata = '');
-                        },
-                      ),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(28),
-                  borderSide: BorderSide(color: tema.colorScheme.outlineVariant),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(28),
-                  borderSide: BorderSide(color: tema.colorScheme.outlineVariant),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: TextField(
+                controller: _controller,
+                focusNode: _fokusCari,
+                onChanged: (v) => setState(() => _kata = v),
+                textInputAction: TextInputAction.search,
+                // Tanpa ini kolom tetap fokus setelah keyboard ditutup, dan keyboard muncul lagi saat menu
+                // urutan atau chip ditutup karena Flutter mengembalikan fokus ke kolom terakhir.
+                onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+                decoration: InputDecoration(
+                  labelText: 'Cari nama atau lokasi',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _kata.isEmpty
+                      ? null
+                      : IconButton(
+                          tooltip: 'Hapus kata kunci',
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _controller.clear();
+                            setState(() => _kata = '');
+                          },
+                        ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 ),
               ),
             ),
           ),
-          SizedBox(
-            height: 56,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              children: [
-                _chip('semua', 'Semua', Icons.apps),
-                for (final k in widget.katalog.kategori) _chip(k.id, k.nama, k.ikonData),
-              ],
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 60,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                children: [
+                  _chip('semua', 'Semua', Icons.apps),
+                  for (final k in widget.katalog.kategori) _chip(k.id, k.nama, k.ikonData),
+                ],
+              ),
             ),
           ),
           // Penyaring status buka dan pengurutan berada pada baris sendiri agar tidak tersembunyi di ujung deretan chip.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
-            child: Row(
-              children: [
-                FilterChip(
-                  avatar: const Icon(Icons.schedule, size: 18),
-                  label: const Text('Buka sekarang'),
-                  selected: _bukaSaja,
-                  onSelected: (nilai) => setState(() => _bukaSaja = nilai),
-                ),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: PopupMenuButton<UrutanDaftar>(
-                      tooltip: 'Urutkan daftar',
-                      initialValue: _urutan,
-                      onSelected: (nilai) => setState(() => _urutan = nilai),
-                      itemBuilder: (context) => [
-                        for (final u in UrutanDaftar.values)
-                          PopupMenuItem(
-                            value: u,
-                            enabled: u != UrutanDaftar.terdekat || bisaUrutJarak,
-                            child: Text(
-                              u == UrutanDaftar.terdekat && !bisaUrutJarak ? 'Terdekat (perlu lokasi)' : u.label,
-                            ),
-                          ),
-                      ],
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 48),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  _urutan == UrutanDaftar.terdekat && !bisaUrutJarak
-                                      ? UrutanDaftar.katalog.label
-                                      : _urutan.label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: tema.textTheme.labelLarge,
-                                ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
+              child: Row(
+                children: [
+                  FilterChip(
+                    avatar: const Icon(Icons.schedule, size: 18),
+                    label: const Text('Buka sekarang'),
+                    selected: _bukaSaja,
+                    onSelected: (nilai) => setState(() => _bukaSaja = nilai),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: PopupMenuButton<UrutanDaftar>(
+                        tooltip: 'Urutkan daftar',
+                        initialValue: _urutan,
+                        onSelected: (nilai) => setState(() => _urutan = nilai),
+                        itemBuilder: (context) => [
+                          for (final u in UrutanDaftar.values)
+                            PopupMenuItem(
+                              value: u,
+                              enabled: u != UrutanDaftar.terdekat || bisaUrutJarak,
+                              child: Text(
+                                u == UrutanDaftar.terdekat && !bisaUrutJarak ? 'Terdekat (perlu lokasi)' : u.label,
                               ),
-                              const SizedBox(width: 4),
-                              const Icon(Icons.sort, size: 20),
-                            ],
+                            ),
+                        ],
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minHeight: 48),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    _urutan == UrutanDaftar.terdekat && !bisaUrutJarak
+                                        ? UrutanDaftar.katalog.label
+                                        : _urutan.label,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: tema.textTheme.labelLarge,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(Icons.sort, size: 20),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: Align(
-              alignment: Alignment.centerLeft,
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: Text(
                 '${hasil.length} destinasi ditemukan',
                 style: tema.textTheme.bodySmall?.copyWith(color: tema.colorScheme.onSurfaceVariant),
               ),
             ),
           ),
-          Expanded(
-            child: hasil.isEmpty
-                ? KeadaanHalaman(
-                    ikon: Icons.search_off,
-                    judul: 'Tidak ada destinasi yang cocok',
-                    pesan: _bukaSaja
-                        ? 'Tidak ada destinasi yang buka sekarang dengan penyaring ini. Matikan Buka sekarang atau ubah kata kunci.'
-                        : 'Ubah kata kunci atau pilih kategori lain.',
-                  )
-                : LayoutBuilder(
-                    builder: (context, batas) {
-                      // Tata letak responsif: dua kolom pada layar lebar, satu kolom pada layar sempit.
-                      if (batas.maxWidth >= 640) {
-                        return GridView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 480,
-                            mainAxisExtent: 112,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                          ),
-                          itemCount: hasil.length,
-                          itemBuilder: (context, i) => DestinasiCard(destinasi: hasil[i]),
-                        );
-                      }
-                      return ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        itemCount: hasil.length,
-                        separatorBuilder: (_, _) => const SizedBox(height: 12),
-                        itemBuilder: (context, i) => DestinasiCard(destinasi: hasil[i]),
-                      );
-                    },
-                  ),
-          ),
+          if (hasil.isEmpty)
+            SliverFillRemaining(
+              child: KeadaanHalaman(
+                ikon: Icons.search_off,
+                judul: 'Tidak ada destinasi yang cocok',
+                pesan: _bukaSaja
+                    ? 'Tidak ada destinasi yang buka sekarang dengan penyaring ini. Matikan Buka sekarang atau ubah kata kunci.'
+                    : 'Ubah kata kunci atau pilih kategori lain.',
+              ),
+            )
+          else
+            // Satu kolom di ponsel, dua atau tiga kolom di layar lebar.
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+              sliver: SliverKartuDestinasi(daftar: hasil, asalHero: 'jelajah'),
+            ),
         ],
       ),
     );

@@ -16,13 +16,15 @@ class PengaturanStore extends ChangeNotifier {
         _idArea = _penyimpanan.getString(_kArea) ?? areaBawaan.id,
         _radiusKm = _penyimpanan.getDouble(_kRadius) ?? radiusBawaanKm,
         _pengingatAktif = _penyimpanan.getBool(_kPengingat) ?? true,
-        _peringatanCuacaAktif = _penyimpanan.getBool(_kPeringatan) ?? true;
+        _peringatanCuacaAktif = _penyimpanan.getBool(_kPeringatan) ?? true,
+        _onboardingSelesai = _penyimpanan.getBool(_kOnboarding) ?? false;
 
   static const String _kMode = 'mode_lokasi';
   static const String _kArea = 'id_area';
   static const String _kRadius = 'radius_km';
   static const String _kPengingat = 'pengingat_aktif';
   static const String _kPeringatan = 'peringatan_cuaca_aktif';
+  static const String _kOnboarding = 'onboarding_selesai';
 
   static const double radiusBawaanKm = 25;
   static const double radiusMinKm = 5;
@@ -34,6 +36,7 @@ class PengaturanStore extends ChangeNotifier {
   double _radiusKm;
   bool _pengingatAktif;
   bool _peringatanCuacaAktif;
+  bool _onboardingSelesai;
 
   ModeLokasi get modeLokasi => _modeLokasi;
 
@@ -45,6 +48,9 @@ class PengaturanStore extends ChangeNotifier {
   bool get pengingatAktif => _pengingatAktif;
 
   bool get peringatanCuacaAktif => _peringatanCuacaAktif;
+
+  /// Benar setelah pengguna menyelesaikan atau melewati pengenalan aplikasi pada pembukaan pertama.
+  bool get onboardingSelesai => _onboardingSelesai;
 
   void aturModeLokasi(ModeLokasi mode) {
     _modeLokasi = mode;
@@ -73,6 +79,12 @@ class PengaturanStore extends ChangeNotifier {
   void aturPeringatanCuaca(bool aktif) {
     _peringatanCuacaAktif = aktif;
     _penyimpanan.setBool(_kPeringatan, aktif);
+    notifyListeners();
+  }
+
+  void selesaikanOnboarding() {
+    _onboardingSelesai = true;
+    _penyimpanan.setBool(_kOnboarding, true);
     notifyListeners();
   }
 }

@@ -1,11 +1,27 @@
 {
-  "versi": 2,
-  "keterangan": "Rating, harga, dan jam buka adalah data contoh (dummy). Koordinat diambil dari OpenStreetMap. Struktur dibuat agar dapat diganti dengan respons API.",
+  "versi": 3,
+  "keterangan": "Rating, harga, dan jam buka adalah data contoh (dummy). Koordinat diambil dari OpenStreetMap. Foto dari Wikimedia Commons; kredit setiap foto ada pada bidang foto. Struktur dibuat agar dapat diganti dengan respons API.",
   "kategori": [
-    { "id": "alam", "nama": "Alam", "ikon": "terrain" },
-    { "id": "budaya", "nama": "Budaya", "ikon": "museum" },
-    { "id": "kuliner", "nama": "Kuliner", "ikon": "restaurant" },
-    { "id": "edukasi", "nama": "Edukasi", "ikon": "school" }
+    {
+      "id": "alam",
+      "nama": "Alam",
+      "ikon": "terrain"
+    },
+    {
+      "id": "budaya",
+      "nama": "Budaya",
+      "ikon": "museum"
+    },
+    {
+      "id": "kuliner",
+      "nama": "Kuliner",
+      "ikon": "restaurant"
+    },
+    {
+      "id": "edukasi",
+      "nama": "Edukasi",
+      "ikon": "school"
+    }
   ],
   "destinasi": [
     {
@@ -17,11 +33,24 @@
       "rating": 4.5,
       "harga": 35000,
       "jam_buka": "07.00 - 16.00",
-      "fasilitas": ["Parkir", "Toilet", "Musala", "Warung makan"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Musala",
+        "Warung makan"
+      ],
       "lat": -7.86962,
       "lng": 112.48397,
       "ruang": "terbuka",
-      "populer": true
+      "populer": true,
+      "foto": {
+        "berkas": "assets/images/destinasi/01-coban-rondo.jpg",
+        "judul": "Coban rondo waterfall.jpg",
+        "penulis": "Habitat salwa",
+        "lisensi": "CC BY-SA 4.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Coban_rondo_waterfall.jpg"
+      }
     },
     {
       "id": 2,
@@ -32,11 +61,24 @@
       "rating": 4.6,
       "harga": 20000,
       "jam_buka": "06.00 - 17.00",
-      "fasilitas": ["Parkir", "Toilet", "Penginapan", "Warung makan"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Penginapan",
+        "Warung makan"
+      ],
       "lat": -8.40331,
       "lng": 112.53977,
       "ruang": "terbuka",
-      "populer": true
+      "populer": true,
+      "foto": {
+        "berkas": "assets/images/destinasi/02-pantai-balekambang.jpg",
+        "judul": "Balekambang beach, Pura Amarta Jati in the middle of Ismoyo island.jpg",
+        "penulis": "Maulana Yusuf",
+        "lisensi": "CC BY-SA 4.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Balekambang_beach,_Pura_Amarta_Jati_in_the_middle_of_Ismoyo_island.jpg"
+      }
     },
     {
       "id": 3,
@@ -47,11 +89,23 @@
       "rating": 4.4,
       "harga": 15000,
       "jam_buka": "07.00 - 16.00",
-      "fasilitas": ["Parkir", "Toilet", "Gazebo"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Gazebo"
+      ],
       "lat": -8.01085,
       "lng": 112.86572,
       "ruang": "terbuka",
-      "populer": false
+      "populer": false,
+      "foto": {
+        "berkas": "assets/images/destinasi/03-coban-pelangi.jpg",
+        "judul": "Air Terjun Coban Pelangi 06 - Utama.jpg",
+        "penulis": "Hugo van den Bos",
+        "lisensi": "CC BY 2.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by/2.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Air_Terjun_Coban_Pelangi_06_-_Utama.jpg"
+      }
     },
     {
       "id": 4,
@@ -62,11 +116,23 @@
       "rating": 4.3,
       "harga": 5000,
       "jam_buka": "08.00 - 17.00",
-      "fasilitas": ["Parkir", "Toilet", "Spot foto"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Spot foto"
+      ],
       "lat": -7.98335,
       "lng": 112.63774,
       "ruang": "terbuka",
-      "populer": true
+      "populer": true,
+      "foto": {
+        "berkas": "assets/images/destinasi/04-kampung-warna-warni-jodipan.jpg",
+        "judul": "Malang - Kampung Warna-Warni Jodipan - Dec 2024.jpg",
+        "penulis": "Dominic Nelson",
+        "lisensi": "CC BY-SA 4.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Malang_-_Kampung_Warna-Warni_Jodipan_-_Dec_2024.jpg"
+      }
     },
     {
       "id": 5,
@@ -77,11 +143,23 @@
       "rating": 4.2,
       "harga": 5000,
       "jam_buka": "07.00 - 16.00",
-      "fasilitas": ["Parkir", "Toilet", "Pemandu"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Pemandu"
+      ],
       "lat": -7.88774,
       "lng": 112.66391,
       "ruang": "terbuka",
-      "populer": false
+      "populer": false,
+      "foto": {
+        "berkas": "assets/images/destinasi/05-candi-singosari.jpg",
+        "judul": "Singhasari Temple.jpg",
+        "penulis": "Gombang",
+        "lisensi": "CC BY-SA 3.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by-sa/3.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Singhasari_Temple.jpg"
+      }
     },
     {
       "id": 6,
@@ -92,11 +170,24 @@
       "rating": 4.4,
       "harga": 10000,
       "jam_buka": "08.00 - 16.00",
-      "fasilitas": ["Parkir", "Toilet", "Pemandu", "Ruang pamer"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Pemandu",
+        "Ruang pamer"
+      ],
       "lat": -7.97199,
       "lng": 112.62098,
       "ruang": "tertutup",
-      "populer": false
+      "populer": false,
+      "foto": {
+        "berkas": "assets/images/destinasi/06-museum-brawijaya.jpg",
+        "judul": "Museum Brawijaya 1.jpg",
+        "penulis": "Christophe95",
+        "lisensi": "CC BY-SA 4.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Museum_Brawijaya_1.jpg"
+      }
     },
     {
       "id": 7,
@@ -107,12 +198,23 @@
       "rating": 4.7,
       "harga": 15000,
       "jam_buka": "09.00 - 21.00",
-      "fasilitas": ["Makan di tempat", "Dibawa pulang"],
+      "fasilitas": [
+        "Makan di tempat",
+        "Dibawa pulang"
+      ],
       "lat": -7.98261,
       "lng": 112.63082,
       "koordinat_perkiraan": true,
       "ruang": "tertutup",
-      "populer": true
+      "populer": true,
+      "foto": {
+        "berkas": "assets/images/destinasi/07-bakso-malang.jpg",
+        "judul": "Baso Malang Karapitan.JPG",
+        "penulis": "Gunawan Kartapranata",
+        "lisensi": "CC BY-SA 3.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by-sa/3.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Baso_Malang_Karapitan.JPG"
+      }
     },
     {
       "id": 8,
@@ -123,12 +225,16 @@
       "rating": 4.5,
       "harga": 18000,
       "jam_buka": "08.00 - 20.00",
-      "fasilitas": ["Makan di tempat", "Dibawa pulang"],
+      "fasilitas": [
+        "Makan di tempat",
+        "Dibawa pulang"
+      ],
       "lat": -7.98261,
       "lng": 112.63082,
       "koordinat_perkiraan": true,
       "ruang": "tertutup",
-      "populer": false
+      "populer": false,
+      "foto": null
     },
     {
       "id": 9,
@@ -139,12 +245,24 @@
       "rating": 4.6,
       "harga": 25000,
       "jam_buka": "10.00 - 21.00",
-      "fasilitas": ["Makan di tempat", "Dibawa pulang", "Parkir"],
+      "fasilitas": [
+        "Makan di tempat",
+        "Dibawa pulang",
+        "Parkir"
+      ],
       "lat": -7.98261,
       "lng": 112.63082,
       "koordinat_perkiraan": true,
       "ruang": "tertutup",
-      "populer": false
+      "populer": false,
+      "foto": {
+        "berkas": "assets/images/destinasi/09-rawon-khas-jawa-timur.jpg",
+        "judul": "Rawon Setan II.jpg",
+        "penulis": "christian razukas from Honolulu, Hawaii",
+        "lisensi": "CC BY-SA 2.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by-sa/2.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Rawon_Setan_II.jpg"
+      }
     },
     {
       "id": 10,
@@ -155,11 +273,24 @@
       "rating": 4.6,
       "harga": 100000,
       "jam_buka": "12.00 - 20.00",
-      "fasilitas": ["Parkir", "Toilet", "Musala", "Restoran"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Musala",
+        "Restoran"
+      ],
       "lat": -7.87883,
       "lng": 112.52014,
       "ruang": "campuran",
-      "populer": true
+      "populer": true,
+      "foto": {
+        "berkas": "assets/images/destinasi/10-museum-angkut.jpg",
+        "judul": "Chevrolet Deluxe, Museum Angkut, Batu, Indonesia, 2017-10-01.jpg",
+        "penulis": "Crisco 1492",
+        "lisensi": "CC BY-SA 4.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Chevrolet_Deluxe,_Museum_Angkut,_Batu,_Indonesia,_2017-10-01.jpg"
+      }
     },
     {
       "id": 11,
@@ -170,11 +301,25 @@
       "rating": 4.5,
       "harga": 90000,
       "jam_buka": "09.00 - 17.00",
-      "fasilitas": ["Parkir", "Toilet", "Musala", "Restoran", "Loker"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Musala",
+        "Restoran",
+        "Loker"
+      ],
       "lat": -7.88425,
-      "lng": 112.52470,
+      "lng": 112.5247,
       "ruang": "campuran",
-      "populer": false
+      "populer": false,
+      "foto": {
+        "berkas": "assets/images/destinasi/11-jatim-park-1.jpg",
+        "judul": "Anjungan Jawa Timur Jawa Timur Park 1 - Tari Topeng Jawa Timur.jpg",
+        "penulis": "Indonesiagood",
+        "lisensi": "CC BY 4.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by/4.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Anjungan_Jawa_Timur_Jawa_Timur_Park_1_-_Tari_Topeng_Jawa_Timur.jpg"
+      }
     },
     {
       "id": 12,
@@ -185,11 +330,23 @@
       "rating": 4.3,
       "harga": 25000,
       "jam_buka": "09.00 - 16.00",
-      "fasilitas": ["Parkir", "Toilet", "Ruang pamer"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Ruang pamer"
+      ],
       "lat": -7.98833,
       "lng": 112.62666,
       "ruang": "tertutup",
-      "populer": false
+      "populer": false,
+      "foto": {
+        "berkas": "assets/images/destinasi/12-museum-musik-indonesia.jpg",
+        "judul": "Gedung Kesenian Gajayana - Museum Musik Indonesia.jpg",
+        "penulis": "Edra27",
+        "lisensi": "CC BY-SA 4.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by-sa/4.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Gedung_Kesenian_Gajayana_-_Museum_Musik_Indonesia.jpg"
+      }
     },
     {
       "id": 13,
@@ -200,11 +357,25 @@
       "rating": 4.4,
       "harga": 50000,
       "jam_buka": "07.00 - 17.00",
-      "fasilitas": ["Parkir", "Toilet", "Musala", "Restoran", "Penginapan"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Musala",
+        "Restoran",
+        "Penginapan"
+      ],
       "lat": -7.81915,
       "lng": 112.52597,
       "ruang": "terbuka",
-      "populer": false
+      "populer": false,
+      "foto": {
+        "berkas": "assets/images/destinasi/13-selecta.jpg",
+        "judul": "Selecta Recreational Park.jpg",
+        "penulis": "consigliere ivan from Bontang, Indonesia",
+        "lisensi": "CC BY 2.0",
+        "url_lisensi": "https://creativecommons.org/licenses/by/2.0",
+        "sumber": "https://commons.wikimedia.org/wiki/File:Selecta_Recreational_Park.jpg"
+      }
     },
     {
       "id": 14,
@@ -215,11 +386,17 @@
       "rating": 4.3,
       "harga": 20000,
       "jam_buka": "07.00 - 16.00",
-      "fasilitas": ["Parkir", "Toilet", "Musala", "Warung makan"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Musala",
+        "Warung makan"
+      ],
       "lat": -7.91491,
       "lng": 112.50572,
       "ruang": "terbuka",
-      "populer": false
+      "populer": false,
+      "foto": null
     },
     {
       "id": 15,
@@ -230,11 +407,17 @@
       "rating": 4.6,
       "harga": 30000,
       "jam_buka": "08.00 - 15.00",
-      "fasilitas": ["Parkir", "Toilet", "Pemandu", "Warung makan"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Pemandu",
+        "Warung makan"
+      ],
       "lat": -8.44413,
       "lng": 112.67156,
       "ruang": "terbuka",
-      "populer": false
+      "populer": false,
+      "foto": null
     },
     {
       "id": 16,
@@ -245,11 +428,16 @@
       "rating": 4.2,
       "harga": 5000,
       "jam_buka": "07.00 - 16.00",
-      "fasilitas": ["Parkir", "Toilet", "Pemandu"],
-      "lat": -8.00580,
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Pemandu"
+      ],
+      "lat": -8.0058,
       "lng": 112.76413,
       "ruang": "terbuka",
-      "populer": false
+      "populer": false,
+      "foto": null
     },
     {
       "id": 17,
@@ -260,11 +448,15 @@
       "rating": 4.5,
       "harga": 0,
       "jam_buka": "00.00 - 00.00",
-      "fasilitas": ["Toilet", "Area duduk"],
+      "fasilitas": [
+        "Toilet",
+        "Area duduk"
+      ],
       "lat": -7.97675,
       "lng": 112.63449,
       "ruang": "terbuka",
-      "populer": false
+      "populer": false,
+      "foto": null
     },
     {
       "id": 18,
@@ -275,11 +467,17 @@
       "rating": 4.4,
       "harga": 5000,
       "jam_buka": "08.00 - 21.00",
-      "fasilitas": ["Parkir", "Toilet", "Spot foto", "Kafe"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Spot foto",
+        "Kafe"
+      ],
       "lat": -7.98082,
-      "lng": 112.62760,
+      "lng": 112.6276,
       "ruang": "terbuka",
-      "populer": false
+      "populer": false,
+      "foto": null
     },
     {
       "id": 19,
@@ -290,11 +488,17 @@
       "rating": 4.1,
       "harga": 5000,
       "jam_buka": "08.00 - 15.00",
-      "fasilitas": ["Parkir", "Toilet", "Pemandu", "Ruang pamer"],
+      "fasilitas": [
+        "Parkir",
+        "Toilet",
+        "Pemandu",
+        "Ruang pamer"
+      ],
       "lat": -7.94032,
       "lng": 112.62086,
       "ruang": "tertutup",
-      "populer": false
+      "populer": false,
+      "foto": null
     }
   ]
 }

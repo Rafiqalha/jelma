@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hijau pinus, warna utama JELMA (lihat docs/riset-desain.md). -->
+    <color name="ic_launcher_background">#0B6457</color>
+    <color name="warna_splash">#0B6457</color>
+    <!-- Latar aplikasi Flutter; dipakai jendela Android agar tidak berkedip hitam saat mulai. -->
+    <color name="latar_aplikasi">#F6F5F1</color>
+</resources>

@@ -8,8 +8,9 @@ import '../models/saran_cuaca.dart';
 import '../state/cuaca_store.dart';
 import '../state/lokasi_store.dart';
 import '../state/store_scope.dart';
+import '../navigasi.dart';
 import '../widgets/chip_saran.dart';
-import '../widgets/gambar_kategori.dart';
+import '../widgets/gambar_destinasi.dart';
 import '../widgets/ikon_cuaca.dart';
 import '../widgets/kartu_cuaca_utama.dart';
 import '../widgets/keadaan_halaman.dart';
@@ -379,18 +380,18 @@ class _BarisDestinasiCuaca extends StatelessWidget {
     final tema = Theme.of(context);
     final d = data.destinasi;
     final jarak = data.jarakKm;
+    final tag = tagFoto('cuaca', d);
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => Navigator.pushNamed(context, '/detail', arguments: d),
+        onTap: () => bukaDetail(context, d, heroTag: tag),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              SizedBox(
-                width: 52,
-                height: 52,
-                child: GambarKategori(kategori: d.kategori, ukuranIkon: 26, radius: BorderRadius.circular(12)),
+              SizedBox.square(
+                dimension: 60,
+                child: GambarDestinasi(destinasi: d, heroTag: tag, ukuranIkon: 26, radius: BorderRadius.circular(14)),
               ),
               const SizedBox(width: 12),
               Expanded(

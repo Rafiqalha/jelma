@@ -40,6 +40,14 @@ Future<void> kembali(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+/// Membuka halaman Detail [nama] dari tab Jelajah; kartu berfoto tinggi, jadi daftar digulir dulu.
+Future<void> bukaDetailDari(WidgetTester tester, String nama) async {
+  await bukaTab(tester, 'Jelajah');
+  await gulirKe(tester, find.text(nama));
+  await tester.tap(find.text(nama));
+  await tester.pumpAndSettle();
+}
+
 /// Repositori yang gagal pada pemanggilan pertama lalu berhasil.
 class _RepositoriGagalDulu implements DestinasiRepository {
   int panggilan = 0;
@@ -57,11 +65,14 @@ void main() {
     testWidgets('menampilkan sambutan, cuaca di lokasi, dan kategori', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
 
-      expect(find.text('Jelajah Malang'), findsOneWidget);
-      expect(find.text('Kategori'), findsOneWidget);
-      expect(find.text('Alam'), findsOneWidget);
-      expect(find.text('26° Hujan'), findsOneWidget);
+      expect(find.bySemanticsLabel('JELMA, Jelajah Malang'), findsOneWidget);
+      expect(find.text('Selamat pagi'), findsOneWidget, reason: 'jam uji 09.00 WIB');
+      expect(find.text('Mau ke mana hari ini?'), findsOneWidget);
+      expect(find.text('26°'), findsOneWidget);
+      expect(find.text('Hujan, peluang hujan hari ini 80%'), findsOneWidget);
       expect(find.text('Klojen, Malang'), findsWidgets);
+      await gulirKe(tester, find.text('Kategori'));
+      expect(find.text('Alam'), findsOneWidget);
       await gulirKe(tester, find.text('Populer'));
       expect(find.text('Coban Uji'), findsWidgets);
       expect(tester.takeException(), isNull);
@@ -78,7 +89,8 @@ void main() {
     testWidgets('saat cerah destinasi terbuka ikut disarankan', (tester) async {
       await bukaAplikasi(tester, await buatLayanan(cuaca: CuacaPalsu(kode: 1, peluang: 5, suhu: 25, suhuTerasa: 26)));
 
-      expect(find.text('25° Cerah berawan'), findsOneWidget);
+      expect(find.text('25°'), findsOneWidget);
+      expect(find.text('Cerah berawan, peluang hujan hari ini 5%'), findsOneWidget);
       expect(find.text('Cocok dikunjungi'), findsWidgets, reason: 'destinasi dalam ruangan');
       // Kartu ketiga (Coban Uji, area terbuka) berada di luar layar sampai daftar digeser ke samping.
       await tester.drag(find.text('Bakso Uji').first, const Offset(-400, 0));
@@ -133,7 +145,7 @@ void main() {
 
     testWidgets('kartu cuaca membuka tab Cuaca', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
-      await tester.tap(find.text('26° Hujan'));
+      await tester.tap(find.text('26°'));
       await tester.pumpAndSettle();
       expect(find.text('Prakiraan 7 hari'), findsOneWidget);
     });
@@ -143,12 +155,37 @@ void main() {
     testWidgets('memilih kategori membuka Jelajah dan menyaring daftar', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
 
+      await gulirKe(tester, find.text('Kuliner'));
       await tester.tap(find.text('Kuliner').first);
       await tester.pumpAndSettle();
 
       expect(find.text('1 destinasi ditemukan'), findsOneWidget);
       expect(find.text('Bakso Uji'), findsOneWidget);
       expect(find.text('Coban Uji'), findsNothing);
+    });
+
+    testWidgets('kolom cari Beranda membuka Jelajah dengan kolom cari langsung aktif', (tester) async {
+      await bukaAplikasi(tester, await buatLayanan());
+      await tester.tap(find.bySemanticsLabel('Cari destinasi'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('3 destinasi ditemukan'), findsOneWidget, reason: 'tab Jelajah dengan kategori Semua');
+      final kolom = tester.widget<EditableText>(find.byType(EditableText));
+      expect(kolom.focusNode.hasFocus, isTrue);
+    });
+
+    testWidgets('memilih urutan tidak memunculkan lagi keyboard kolom cari', (tester) async {
+      await bukaAplikasi(tester, await buatLayanan());
+      await bukaTab(tester, 'Jelajah');
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+      expect(tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus, isTrue);
+
+      await tester.tap(find.byTooltip('Urutkan daftar'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Nama A-Z'));
+      await tester.pumpAndSettle();
+      expect(tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus, isFalse);
     });
 
     testWidgets('pencarian menyaring daftar dan menampilkan keadaan kosong', (tester) async {
@@ -167,6 +204,7 @@ void main() {
 
     testWidgets('urutan Terdekat memakai lokasi aktif', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
+      await layarTinggi(tester);
       await bukaTab(tester, 'Jelajah');
       expect(find.text('Urutan katalog'), findsOneWidget);
 
@@ -184,6 +222,7 @@ void main() {
 
     testWidgets('urutan Rating tertinggi dan Nama A-Z', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
+      await layarTinggi(tester);
       await bukaTab(tester, 'Jelajah');
 
       await tester.tap(find.byTooltip('Urutkan daftar'));
@@ -211,6 +250,7 @@ void main() {
 
     testWidgets('penyaring Buka sekarang menyembunyikan destinasi yang tutup', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
+      await layarTinggi(tester);
       await bukaTab(tester, 'Jelajah');
       expect(find.text('3 destinasi ditemukan'), findsOneWidget);
       expect(find.text('Museum Uji'), findsOneWidget, reason: 'buka pukul 12.00, sekarang 09.00');
@@ -221,21 +261,35 @@ void main() {
       expect(find.text('Museum Uji'), findsNothing);
     });
 
-    testWidgets('kartu menampilkan status buka dan jarak dari lokasi', (tester) async {
+    testWidgets('kartu menampilkan status buka, jarak dari lokasi, dan harga', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
+      await layarTinggi(tester);
       await bukaTab(tester, 'Jelajah');
 
       expect(find.text('Buka'), findsNWidgets(2));
       expect(find.text('Tutup'), findsOneWidget);
       expect(find.text('0 m · Kota Malang'), findsOneWidget);
+      expect(find.text('Rp 35.000  tiket masuk'), findsOneWidget);
+      expect(find.byTooltip('Tambah ke favorit'), findsNWidgets(3));
     });
 
-    testWidgets('layar lebar memakai grid dua kolom', (tester) async {
+    testWidgets('layar lebar menata kartu dalam dua kolom', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
-      tester.view.physicalSize = const Size(2400, 1200);
+      tester.view.physicalSize = const Size(3000, 2000);
       await tester.pumpAndSettle();
       await bukaTab(tester, 'Jelajah');
-      expect(find.byType(GridView), findsOneWidget);
+      expect(tester.getTopLeft(find.text('Coban Uji')).dy, tester.getTopLeft(find.text('Bakso Uji')).dy);
+      expect(tester.getTopLeft(find.text('Coban Uji')).dx, lessThan(tester.getTopLeft(find.text('Bakso Uji')).dx));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('kepala daftar ikut tergulung sehingga layar lanskap tetap memuat kartu', (tester) async {
+      await bukaAplikasi(tester, await buatLayanan());
+      tester.view.physicalSize = const Size(2400, 1080);
+      await tester.pumpAndSettle();
+      await bukaTab(tester, 'Jelajah');
+      await gulirKe(tester, find.text('Museum Uji'));
+      expect(find.text('Museum Uji'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });
@@ -243,26 +297,26 @@ void main() {
   group('Detail', () {
     testWidgets('menampilkan informasi, status buka, cuaca, dan saran kunjungan', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
-      await bukaTab(tester, 'Jelajah');
-      await tester.tap(find.text('Coban Uji'));
-      await tester.pumpAndSettle();
+      await bukaDetailDari(tester, 'Coban Uji');
 
+      expect(find.text('Coban Uji'), findsWidgets, reason: 'judul halaman dan judul bilah atas yang tersembunyi');
       expect(find.text('Tentang'), findsOneWidget);
-      expect(find.text('Rp 35.000'), findsOneWidget);
+      expect(find.text('Rp 35.000'), findsOneWidget, reason: 'harga pada bilah aksi bawah');
       expect(find.text('Buka sampai 16.00'), findsOneWidget);
+      expect(find.text('4.5'), findsOneWidget);
+      expect(find.text('Area terbuka'), findsOneWidget);
       expect(find.text('Cuaca di lokasi ini'), findsOneWidget);
       expect(find.text('26° Hujan'), findsOneWidget);
       expect(find.text('Sebaiknya ditunda'), findsOneWidget);
       expect(find.textContaining('Peluang hujan 80%'), findsOneWidget);
-      expect(find.text('Tambah ke Favorit'), findsOneWidget);
+      expect(find.byTooltip('Tambah ke favorit'), findsOneWidget);
+      expect(find.text('Rencanakan kunjungan'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
     testWidgets('destinasi dalam ruangan aman saat hujan dan titik perkiraan dijelaskan', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
-      await bukaTab(tester, 'Jelajah');
-      await tester.tap(find.text('Bakso Uji'));
-      await tester.pumpAndSettle();
+      await bukaDetailDari(tester, 'Bakso Uji');
 
       expect(find.text('Aman saat hujan'), findsOneWidget);
       expect(find.textContaining('Titik perkiraan di pusat kota'), findsOneWidget);
@@ -271,13 +325,11 @@ void main() {
     testWidgets('favorit berubah, tersimpan permanen, dan muncul pada tab Favorit', (tester) async {
       final layanan = await buatLayanan();
       await bukaAplikasi(tester, layanan);
-      await bukaTab(tester, 'Jelajah');
-      await tester.tap(find.text('Coban Uji'));
-      await tester.pumpAndSettle();
+      await bukaDetailDari(tester, 'Coban Uji');
 
-      await tester.tap(find.text('Tambah ke Favorit'));
+      await tester.tap(find.byTooltip('Tambah ke favorit'));
       await tester.pumpAndSettle();
-      expect(find.text('Hapus dari Favorit'), findsOneWidget);
+      expect(find.byTooltip('Hapus dari favorit'), findsOneWidget);
       expect(layanan.penyimpanan.getStringList('favorit_ids'), ['1']);
 
       await kembali(tester);
@@ -471,17 +523,14 @@ void main() {
 
     testWidgets('rencana dari halaman Detail memilih destinasinya dan menampilkan cuaca di daftar', (tester) async {
       await bukaAplikasi(tester, await buatLayanan());
-      await bukaTab(tester, 'Jelajah');
-      await tester.tap(find.text('Coban Uji'));
-      await tester.pumpAndSettle();
-      await lihat(tester, find.text('Rencanakan kunjungan'));
+      await bukaDetailDari(tester, 'Coban Uji');
       await tester.tap(find.text('Rencanakan kunjungan'));
       await tester.pumpAndSettle();
       expect(find.text('Destinasi (1 dipilih)'), findsOneWidget);
 
       await tester.tap(find.text('Simpan rencana'));
       await tester.pumpAndSettle();
-      expect(find.text('Tambah ke Favorit'), findsOneWidget, reason: 'kembali ke halaman Detail');
+      expect(find.byTooltip('Tambah ke favorit'), findsOneWidget, reason: 'kembali ke halaman Detail');
 
       await kembali(tester);
       await bukaTab(tester, 'Rencana');
@@ -503,6 +552,27 @@ void main() {
       expect(find.text('Akhir pekan'), findsOneWidget);
       expect(find.textContaining('2 destinasi, rute sekitar'), findsOneWidget);
       expect(find.byType(FloatingActionButton), findsOneWidget);
+    });
+
+    testWidgets('pesan rencana disimpan tampil di atas tombol Buat rencana, tidak menutupinya', (tester) async {
+      final tersimpan = jsonEncode([
+        Rencana(id: 1, nama: 'Rencana lama', waktu: DateTime.utc(2026, 11, 26, 10), idDestinasi: const [1]).toJson(),
+      ]);
+      await bukaAplikasi(tester, await buatLayanan(awal: {'rencana_daftar': tersimpan, 'rencana_id_terakhir': 1}));
+      await bukaTab(tester, 'Rencana');
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      await lihat(tester, find.text('Bakso Uji'));
+      await tester.tap(find.text('Bakso Uji'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Simpan rencana'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SnackBar), findsOneWidget);
+      final pesan = tester.getRect(find.byType(SnackBar));
+      final tombol = tester.getRect(find.byType(FloatingActionButton));
+      expect(pesan.bottom, lessThanOrEqualTo(tombol.top), reason: 'pesan $pesan, tombol $tombol');
     });
 
     testWidgets('rencana yang sudah ada dapat diubah', (tester) async {
@@ -625,10 +695,11 @@ void main() {
       await tester.tap(find.byTooltip('Pengaturan').first);
       await tester.pumpAndSettle();
 
-      await lihat(tester, find.text('Muat ulang'));
+      await gulirKe(tester, find.text('Muat ulang'));
       expect(find.textContaining('Open-Meteo.com'), findsOneWidget);
       expect(find.textContaining('OpenStreetMap contributors'), findsOneWidget);
-      expect(find.text('Bawaan aplikasi, versi data 2'), findsOneWidget);
+      expect(find.textContaining('Foto destinasi: Wikimedia Commons'), findsOneWidget);
+      expect(find.text('Bawaan aplikasi, versi data 3'), findsOneWidget);
 
       await tester.tap(find.text('Muat ulang'));
       await tester.pumpAndSettle();
@@ -677,8 +748,139 @@ void main() {
       expect(find.text('Periksa koneksi internet lalu coba lagi.'), findsOneWidget);
       await tester.tap(find.text('Coba lagi'));
       await tester.pumpAndSettle();
-      expect(find.text('Jelajah Malang'), findsOneWidget);
+      expect(find.text('Mau ke mana hari ini?'), findsOneWidget);
       expect(repo.panggilan, 2);
+    });
+  });
+
+  group('Pengenalan', () {
+    testWidgets('pembukaan pertama menampilkan pengenalan; Lewati membuka Beranda dan tersimpan', (tester) async {
+      final layanan = await buatLayanan(onboardingSelesai: false);
+      await bukaAplikasi(tester, layanan);
+
+      expect(find.text('Kenali tempatnya sebelum berangkat'), findsOneWidget);
+      expect(find.textContaining('3 destinasi alam, budaya, kuliner'), findsOneWidget, reason: 'jumlah dari katalog');
+      expect(find.bySemanticsLabel('Halaman 1 dari 3'), findsOneWidget);
+      await tester.tap(find.text('Lewati'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Mau ke mana hari ini?'), findsOneWidget);
+      expect(layanan.penyimpanan.getBool('onboarding_selesai'), isTrue);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('Lanjut sampai halaman terakhir lalu Izinkan lokasi meminta izin sekali', (tester) async {
+      final lokasi = LokasiPalsu(izin: IzinLokasi.ditolak, izinSetelahMinta: IzinLokasi.diberikan);
+      await bukaAplikasi(tester, await buatLayanan(lokasi: lokasi, onboardingSelesai: false));
+
+      await tester.tap(find.text('Lanjut'));
+      await tester.pumpAndSettle();
+      expect(find.text('Cuaca dicek di titik destinasinya'), findsOneWidget);
+      await tester.tap(find.text('Lanjut'));
+      await tester.pumpAndSettle();
+      expect(find.text('Mulai dari lokasi Anda'), findsOneWidget);
+      expect(find.text('Lewati'), findsNothing);
+      expect(lokasi.jumlahMintaIzin, 0, reason: 'izin baru diminta setelah alasannya dibaca');
+
+      await tester.tap(find.text('Izinkan lokasi'));
+      await tester.pumpAndSettle();
+      expect(lokasi.jumlahMintaIzin, 1);
+      expect(find.text('Mau ke mana hari ini?'), findsOneWidget);
+      await gulirKe(tester, find.textContaining('Dalam radius 25 km'));
+      expect(find.textContaining('Dalam radius 25 km dari Klojen, Malang'), findsOneWidget);
+    });
+
+    testWidgets('Nanti saja tidak meminta izin dan Beranda menjelaskan langkah berikutnya', (tester) async {
+      final lokasi = LokasiPalsu(izin: IzinLokasi.ditolak);
+      await bukaAplikasi(tester, await buatLayanan(lokasi: lokasi, onboardingSelesai: false));
+      await tester.tap(find.text('Lanjut'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Lanjut'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Nanti saja'));
+      await tester.pumpAndSettle();
+      expect(lokasi.jumlahMintaIzin, 0);
+      await gulirKe(tester, find.text('Lokasi belum diizinkan'));
+      expect(find.text('Izinkan lokasi'), findsOneWidget);
+    });
+
+    testWidgets('tombol kembali sistem kembali ke halaman pengenalan sebelumnya', (tester) async {
+      await bukaAplikasi(tester, await buatLayanan(onboardingSelesai: false));
+      await tester.tap(find.text('Lanjut'));
+      await tester.pumpAndSettle();
+      expect(find.text('Cuaca dicek di titik destinasinya'), findsOneWidget);
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('Kenali tempatnya sebelum berangkat'), findsOneWidget);
+    });
+
+    testWidgets('pengenalan dapat dibuka lagi dari Pengaturan', (tester) async {
+      await bukaAplikasi(tester, await buatLayanan());
+      await tester.tap(find.byTooltip('Pengaturan').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Lihat pengenalan lagi'));
+      await tester.pumpAndSettle();
+      expect(find.text('Kenali tempatnya sebelum berangkat'), findsOneWidget);
+
+      await tester.tap(find.text('Lewati'));
+      await tester.pumpAndSettle();
+      expect(find.text('Pengaturan'), findsOneWidget);
+    });
+  });
+
+  group('Foto dan kredit', () {
+    testWidgets('Detail menampilkan kredit foto dan membuka halaman sumbernya', (tester) async {
+      final dibuka = <Uri>[];
+      await bukaAplikasi(tester, await buatLayanan(tautanDibuka: dibuka));
+      await bukaDetailDari(tester, 'Coban Uji');
+
+      expect(find.bySemanticsLabel('Foto Coban Uji'), findsOneWidget);
+      expect(find.text('Foto: Penulis Uji, CC BY-SA 4.0, Wikimedia Commons'), findsOneWidget);
+      await tester.tap(find.text('Foto: Penulis Uji, CC BY-SA 4.0, Wikimedia Commons'));
+      await tester.pumpAndSettle();
+      expect(dibuka.single.toString(), 'https://commons.wikimedia.org/wiki/File:Coban_rondo_waterfall.jpg');
+    });
+
+    testWidgets('destinasi tanpa foto memakai gambar pengganti yang berlabel', (tester) async {
+      await bukaAplikasi(tester, await buatLayanan());
+      await bukaDetailDari(tester, 'Museum Uji');
+
+      expect(find.text('Foto belum tersedia'), findsOneWidget);
+      expect(find.text('Foto belum tersedia untuk destinasi ini.'), findsOneWidget);
+    });
+
+    testWidgets('halaman Kredit foto mencantumkan pembuat, lisensi, dan destinasi tanpa foto', (tester) async {
+      final dibuka = <Uri>[];
+      await bukaAplikasi(tester, await buatLayanan(tautanDibuka: dibuka));
+      await tester.tap(find.byTooltip('Pengaturan').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Kredit foto'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Coban rondo waterfall.jpg'), findsOneWidget);
+      expect(find.text('Penulis Uji, CC BY-SA 4.0'), findsOneWidget);
+      expect(find.text('Belum ada foto'), findsOneWidget);
+      expect(find.textContaining('Bakso Uji, Museum Uji.'), findsOneWidget);
+      expect(find.textContaining('Plus Jakarta Sans oleh Tokotype'), findsOneWidget);
+
+      await tester.tap(find.text('Baca lisensi CC BY-SA 4.0'));
+      await tester.pumpAndSettle();
+      expect(dibuka.single.toString(), 'https://creativecommons.org/licenses/by-sa/4.0');
+    });
+
+    testWidgets('mengetuk kartu menerbangkan foto ke Detail tanpa tabrakan tag Hero', (tester) async {
+      await bukaAplikasi(tester, await buatLayanan());
+      await layarTinggi(tester);
+      await bukaTab(tester, 'Jelajah');
+      await tester.tap(find.text('Coban Uji'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 150));
+      expect(find.byType(Hero), findsWidgets);
+      await tester.pumpAndSettle();
+      expect(find.text('Cuaca di lokasi ini'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   });
 

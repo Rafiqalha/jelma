@@ -6,6 +6,7 @@ import '../state/favorit_store.dart';
 import '../state/lokasi_store.dart';
 import '../state/rencana_store.dart';
 import '../state/store_scope.dart';
+import '../tema.dart';
 import 'beranda_page.dart';
 import 'cuaca_page.dart';
 import 'favorit_page.dart';
@@ -13,7 +14,7 @@ import 'jelajah_page.dart';
 import 'rencana_page.dart';
 
 /// Kerangka utama aplikasi: lima tab (Beranda, Jelajah, Cuaca, Rencana, Favorit) yang dipindahkan
-/// dengan [BottomNavigationBar]. Halaman lain dibuka terpisah dengan `Navigator`.
+/// dengan [NavigationBar] Material 3. Halaman lain dibuka terpisah dengan `Navigator`.
 ///
 /// Kerangka ini juga menghubungkan lokasi, cuaca, dan rencana: cuaca dimuat ulang saat lokasi
 /// berubah, dan notifikasi rencana disesuaikan setiap kali cuaca berhasil dimuat.
@@ -29,6 +30,9 @@ class ShellPage extends StatefulWidget {
 class _ShellPageState extends State<ShellPage> {
   int _tab = 0;
   String _kategori = 'semua';
+
+  /// Jumlah ketukan kolom cari Beranda; perubahan nilainya membuat kolom cari Jelajah aktif.
+  int _mintaCari = 0;
 
   late final LokasiStore _lokasi;
   late final CuacaStore _cuaca;
@@ -85,7 +89,11 @@ class _ShellPageState extends State<ShellPage> {
     _rencana.sinkronkan(katalog: widget.katalog, cuaca: _cuaca);
   }
 
-  void _pilihTab(int indeks) => setState(() => _tab = indeks);
+  void _pilihTab(int indeks) {
+    // Keyboard kolom cari tidak ikut terbawa ke tab lain.
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _tab = indeks);
+  }
 
   /// Membuka tab Jelajah dengan kategori yang dipilih dari Beranda.
   void _bukaKategori(String id) => setState(() {
@@ -96,65 +104,83 @@ class _ShellPageState extends State<ShellPage> {
   @override
   Widget build(BuildContext context) {
     final jumlahFavorit = StoreScope.of<FavoritStore>(context).jumlah;
+    final adaRencana = StoreScope.of<RencanaStore>(context).daftar.isNotEmpty;
     return Scaffold(
+      // Tombol ini dipasang di sini, bukan di Scaffold halaman Rencana, karena SnackBar selalu tampil
+      // di Scaffold terluar dan hanya memberi ruang untuk tombol di Scaffold yang sama. Di Scaffold
+      // halaman Rencana, pesan "Rencana disimpan" menutupi tombolnya.
+      floatingActionButton: _tab == 3 && adaRencana
+          ? FloatingActionButton.extended(
+              onPressed: () => Navigator.pushNamed(context, '/rencana/form'),
+              icon: const Icon(Icons.add),
+              label: const Text('Buat rencana'),
+            )
+          : null,
       body: IndexedStack(
         index: _tab,
         children: [
           BerandaPage(
             katalog: widget.katalog,
             onKategori: _bukaKategori,
-            onCari: () => _bukaKategori('semua'),
+            onCari: () {
+              _mintaCari++;
+              _bukaKategori('semua');
+            },
             onBukaCuaca: () => _pilihTab(2),
           ),
           JelajahPage(
             katalog: widget.katalog,
             kategoriTerpilih: _kategori,
             onKategoriBerubah: (id) => setState(() => _kategori = id),
+            permintaanCari: _mintaCari,
           ),
           CuacaPage(katalog: widget.katalog),
           RencanaPage(katalog: widget.katalog),
           FavoritPage(katalog: widget.katalog),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _tab,
-        onTap: _pilihTab,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Beranda',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.explore_outlined),
-            activeIcon: Icon(Icons.explore),
-            label: 'Jelajah',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.wb_cloudy_outlined),
-            activeIcon: Icon(Icons.wb_cloudy),
-            label: 'Cuaca',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.event_note_outlined),
-            activeIcon: Icon(Icons.event_note),
-            label: 'Rencana',
-          ),
-          BottomNavigationBarItem(
-            icon: Badge(
-              isLabelVisible: jumlahFavorit > 0,
-              label: Text('$jumlahFavorit'),
-              child: const Icon(Icons.favorite_border),
+      // Garis tipis memisahkan bilah navigasi putih dari isi halaman yang bergulir di atasnya.
+      bottomNavigationBar: DecoratedBox(
+        decoration: const BoxDecoration(border: Border(top: BorderSide(color: WarnaJelma.garis))),
+        child: NavigationBar(
+          selectedIndex: _tab,
+          onDestinationSelected: _pilihTab,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home),
+              label: 'Beranda',
             ),
-            activeIcon: Badge(
-              isLabelVisible: jumlahFavorit > 0,
-              label: Text('$jumlahFavorit'),
-              child: const Icon(Icons.favorite),
+            const NavigationDestination(
+              icon: Icon(Icons.explore_outlined),
+              selectedIcon: Icon(Icons.explore),
+              label: 'Jelajah',
             ),
-            label: 'Favorit',
-          ),
-        ],
+            const NavigationDestination(
+              icon: Icon(Icons.wb_cloudy_outlined),
+              selectedIcon: Icon(Icons.wb_cloudy),
+              label: 'Cuaca',
+            ),
+            const NavigationDestination(
+              icon: Icon(Icons.event_note_outlined),
+              selectedIcon: Icon(Icons.event_note),
+              label: 'Rencana',
+            ),
+            NavigationDestination(
+              icon: Badge(
+                isLabelVisible: jumlahFavorit > 0,
+                label: Text('$jumlahFavorit'),
+                child: const Icon(Icons.favorite_border),
+              ),
+              selectedIcon: Badge(
+                isLabelVisible: jumlahFavorit > 0,
+                label: Text('$jumlahFavorit'),
+                child: const Icon(Icons.favorite),
+              ),
+              label: 'Favorit',
+            ),
+          ],
+        ),
       ),
     );
   }

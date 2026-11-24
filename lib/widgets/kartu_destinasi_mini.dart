@@ -1,91 +1,106 @@
 import 'package:flutter/material.dart';
 
 import '../models/destinasi.dart';
-import 'gambar_kategori.dart';
+import '../navigasi.dart';
+import '../tema.dart';
+import 'destinasi_card.dart';
+import 'gambar_destinasi.dart';
 
-/// Tinggi daftar kartu mendatar; bertambah bila pengguna memperbesar ukuran teks agar isi tidak terpotong.
-double tinggiDaftarMendatar(BuildContext context, double dasar) {
-  final skala = MediaQuery.textScalerOf(context).scale(1);
-  return dasar + (skala - 1).clamp(0.0, 1.0) * 96;
-}
-
-/// Kartu kecil destinasi untuk daftar mendatar: gambar kategori, lencana rating, nama, dan satu baris keterangan.
+/// Kartu berfoto untuk deret mendatar di Beranda: foto bersudut lembut, lalu nama dan keterangan
+/// langsung di atas latar halaman, tanpa bingkai kartu, agar foto menjadi pusat perhatian.
 class KartuDestinasiMini extends StatelessWidget {
-  const KartuDestinasiMini({super.key, required this.destinasi, this.keterangan});
+  const KartuDestinasiMini({
+    super.key,
+    required this.destinasi,
+    required this.asalHero,
+    this.lebar = 200,
+    this.keterangan,
+  });
 
   final Destinasi destinasi;
 
-  /// Isi baris di bawah nama; bawaannya lokasi destinasi.
+  /// Awalan tag Hero; setiap bagian Beranda memakai awalan sendiri.
+  final String asalHero;
+  final double lebar;
+
+  /// Isi di bawah nama; bawaannya lokasi destinasi.
   final Widget? keterangan;
 
   @override
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
+    final tag = tagFoto(asalHero, destinasi);
     return SizedBox(
-      width: 168,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => Navigator.pushNamed(context, '/detail', arguments: destinasi),
+      width: lebar,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => bukaDetail(context, destinasi, heroTag: tag),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 104,
+              AspectRatio(
+                aspectRatio: 4 / 3,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    GambarKategori(kategori: destinasi.kategori, ukuranIkon: 44),
+                    GambarDestinasi(destinasi: destinasi, heroTag: tag, radius: BorderRadius.circular(20)),
                     Positioned(
-                      top: 8,
-                      right: 8,
+                      left: 10,
+                      top: 10,
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.star_rounded, size: 14, color: Color(0xFFF9A825)),
-                            const SizedBox(width: 2),
-                            Text(
-                              destinasi.rating.toStringAsFixed(1),
-                              style: tema.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
-                            ),
-                          ],
-                        ),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                        child: NilaiRating(rating: destinasi.rating, kecil: true),
                       ),
                     ),
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      destinasi.nama,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: tema.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(height: 4),
-                    keterangan ??
-                        Text(
-                          destinasi.lokasi,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: tema.textTheme.bodySmall?.copyWith(color: tema.colorScheme.onSurfaceVariant),
-                        ),
-                  ],
-                ),
+              const SizedBox(height: 10),
+              Text(
+                destinasi.nama,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: tema.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800, fontSize: 15),
               ),
+              const SizedBox(height: 2),
+              keterangan ??
+                  Text(
+                    destinasi.lokasi,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: tema.textTheme.bodySmall?.copyWith(color: WarnaJelma.tintaLembut),
+                  ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Deret mendatar yang tingginya mengikuti isi, sehingga teks besar tidak terpotong.
+class DeretMendatar extends StatelessWidget {
+  const DeretMendatar({super.key, required this.anak, this.jarak = 14});
+
+  final List<Widget> anak;
+  final double jarak;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i = 0; i < anak.length; i++) ...[
+            if (i > 0) SizedBox(width: jarak),
+            anak[i],
+          ],
+        ],
       ),
     );
   }

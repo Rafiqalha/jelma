@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/area_referensi.dart';
@@ -107,6 +109,19 @@ class LokasiStore extends ChangeNotifier {
     } finally {
       _sedangMemuat = false;
     }
+  }
+
+  /// Meminta izin lokasi dari halaman pengenalan. Bila diizinkan, posisi diambil di latar
+  /// sehingga pengenalan dapat langsung ditutup tanpa menunggu GPS.
+  Future<bool> mintaIzinDulu() async {
+    if (mode == ModeLokasi.manual) _pengaturan.aturModeLokasi(ModeLokasi.gps);
+    final izin = await _layanan.mintaIzin();
+    if (izin == IzinLokasi.diberikan) {
+      unawaited(perbarui());
+      return true;
+    }
+    _terapkanIzin(izin);
+    return false;
   }
 
   /// Beralih ke GPS dan langsung meminta izin serta posisi.

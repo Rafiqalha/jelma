@@ -141,12 +141,19 @@ void main() {
   });
 
   group('ApiDestinasiRepository', () {
+    final jsonV3 = jsonEncode({
+      'versi': 3,
+      'kategori': [
+        {'id': 'alam', 'nama': 'Alam', 'ikon': 'terrain'},
+      ],
+      'destinasi': [cobanUji.toJson()],
+    });
     final jsonV2 = jsonEncode({
       'versi': 2,
       'kategori': [
         {'id': 'alam', 'nama': 'Alam', 'ikon': 'terrain'},
       ],
-      'destinasi': [cobanUji.toJson()],
+      'destinasi': [baksoUji.toJson()],
     });
     final jsonV1 = jsonEncode({
       'kategori': [
@@ -168,12 +175,20 @@ void main() {
       );
     }
 
-    test('memakai data jaringan versi 2 dan menyimpannya', () async {
-      final repo = await buat((_) async => http.Response(jsonV2, 200));
+    test('memakai data jaringan versi 3 beserta fotonya dan menyimpannya', () async {
+      final repo = await buat((_) async => http.Response(jsonV3, 200));
       final katalog = await repo.muat();
       expect(katalog.sumber, SumberKatalog.jaringan);
       expect(katalog.destinasi, hasLength(1));
-      expect(repo.penyimpanan!.getString('katalog_simpanan'), jsonV2);
+      expect(katalog.destinasi.single.foto?.penulis, 'Penulis Uji');
+      expect(repo.penyimpanan!.getString('katalog_simpanan'), jsonV3);
+    });
+
+    test('menolak data jaringan versi 2 yang belum berfoto, termasuk salinan tersimpannya', () async {
+      final repo = await buat((_) async => http.Response(jsonV2, 200), awal: {'katalog_simpanan': jsonV2});
+      final katalog = await repo.muat();
+      expect(katalog.sumber, SumberKatalog.aset);
+      expect(repo.penyimpanan!.getString('katalog_simpanan'), jsonV2, reason: 'salinan lama tidak ditimpa data yang ditolak');
     });
 
     test('menolak data jaringan versi lama dan memakai aset', () async {
@@ -184,7 +199,7 @@ void main() {
     });
 
     test('jaringan gagal memakai salinan tersimpan bila ada', () async {
-      final repo = await buat((_) async => http.Response('', 503), awal: {'katalog_simpanan': jsonV2});
+      final repo = await buat((_) async => http.Response('', 503), awal: {'katalog_simpanan': jsonV3});
       final katalog = await repo.muat();
       expect(katalog.sumber, SumberKatalog.simpanan);
     });
@@ -213,10 +228,30 @@ void main() {
       katalog = KatalogDestinasi.fromJson(jsonDecode(teks) as Map<String, dynamic>);
     });
 
-    test('berstruktur versi 2 dengan 19 destinasi dan empat kategori', () {
-      expect(katalog.versi, 2);
+    test('berstruktur versi 3 dengan 19 destinasi dan empat kategori', () {
+      expect(katalog.versi, 3);
       expect(katalog.destinasi, hasLength(19));
       expect(katalog.kategori.map((k) => k.id), ['alam', 'budaya', 'kuliner', 'edukasi']);
+    });
+
+    test('setiap foto ada berkasnya, berkredit lengkap, dan berlisensi bebas', () {
+      final berfoto = katalog.destinasi.where((d) => d.foto != null).toList();
+      expect(berfoto, isNotEmpty);
+      final lisensiBebas = RegExp(r'^(CC BY(-SA)? \d\.\d|CC0 1\.0|Public domain)$');
+      for (final d in berfoto) {
+        final foto = d.foto!;
+        expect(File(foto.berkas).existsSync(), isTrue, reason: '${d.nama}: ${foto.berkas}');
+        expect(foto.penulis, isNotEmpty, reason: d.nama);
+        expect(foto.lisensi, matches(lisensiBebas), reason: d.nama);
+        expect(foto.sumber, startsWith('https://commons.wikimedia.org/wiki/File:'), reason: d.nama);
+        expect(foto.urlLisensi, startsWith('https://creativecommons.org/'), reason: d.nama);
+      }
+    });
+
+    test('foto katalog memakai nama berkas yang berawalan identitas destinasi', () {
+      for (final d in katalog.destinasi.where((d) => d.foto != null)) {
+        expect(d.foto!.berkas, startsWith('assets/images/destinasi/${d.id.toString().padLeft(2, '0')}-'), reason: d.nama);
+      }
     });
 
     test('identitas unik dan setiap kategori dikenal', () {

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'data/destinasi_repository.dart';
 import 'pages/detail_page.dart';
+import 'pages/kredit_foto_page.dart';
+import 'pages/onboarding_page.dart';
 import 'pages/pengaturan_page.dart';
 import 'pages/rencana_detail_page.dart';
 import 'pages/rencana_form_page.dart';
@@ -17,7 +20,9 @@ import 'state/notifikasi_store.dart';
 import 'state/pengaturan_store.dart';
 import 'state/rencana_store.dart';
 import 'state/store_scope.dart';
+import 'tema.dart';
 import 'widgets/keadaan_halaman.dart';
+import 'widgets/logo_jelma.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -87,35 +92,6 @@ class _JelajahAppState extends State<JelajahApp> {
     super.dispose();
   }
 
-  ThemeData _tema() {
-    final skema = ColorScheme.fromSeed(seedColor: const Color(0xFF00796B));
-    return ThemeData(
-      colorScheme: skema,
-      useMaterial3: true,
-      scaffoldBackgroundColor: const Color(0xFFF4F8F7),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFFF4F8F7),
-        surfaceTintColor: Colors.transparent,
-        titleTextStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF14312E)),
-      ),
-      cardTheme: CardThemeData(
-        elevation: 0,
-        color: Colors.white,
-        margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: skema.outlineVariant),
-        ),
-      ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: Colors.white,
-        selectedItemColor: skema.primary,
-        unselectedItemColor: skema.onSurfaceVariant,
-        showUnselectedLabels: true,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return CakupanAplikasi(
@@ -131,21 +107,40 @@ class _JelajahAppState extends State<JelajahApp> {
       child: MaterialApp(
         title: 'Jelajah Malang',
         debugShowCheckedModeBanner: false,
-        theme: _tema(),
+        theme: buatTema(),
+        // Transisi Hero foto dimatikan bila pengguna menonaktifkan animasi di pengaturan sistem.
+        builder: (context, anak) => HeroMode(enabled: !MediaQuery.disableAnimationsOf(context), child: anak!),
         // Bahasa Indonesia agar pemilih tanggal dan jam serta tooltip bawaan Material ikut berbahasa Indonesia.
         locale: const Locale('id', 'ID'),
         supportedLocales: const [Locale('id', 'ID')],
         localizationsDelegates: GlobalMaterialLocalizations.delegates,
         initialRoute: '/',
         routes: {
-          '/': (context) => const _MuatKatalog(),
+          '/': (context) => const _Akar(),
           '/detail': (context) => const DetailPage(),
           '/pengaturan': (context) => const PengaturanPage(),
           '/rencana/form': (context) => const RencanaFormPage(),
           '/rencana/detail': (context) => const RencanaDetailPage(),
+          '/kredit-foto': (context) => const KreditFotoPage(),
+          // Pengenalan yang dibuka ulang dari Pengaturan; selesai berarti kembali.
+          '/pengenalan': (context) => OnboardingPage(onSelesai: () => Navigator.pop(context)),
         },
       ),
     );
+  }
+}
+
+/// Halaman awal: pengenalan pada pembukaan pertama, lalu kerangka utama.
+///
+/// Katalog sudah mulai dimuat sejak aplikasi dibuka, jadi biasanya siap begitu pengenalan selesai.
+class _Akar extends StatelessWidget {
+  const _Akar();
+
+  @override
+  Widget build(BuildContext context) {
+    final pengaturan = StoreScope.of<PengaturanStore>(context);
+    if (!pengaturan.onboardingSelesai) return OnboardingPage(onSelesai: pengaturan.selesaikanOnboarding);
+    return const _MuatKatalog();
   }
 }
 
@@ -169,6 +164,25 @@ class _MuatKatalog extends StatelessWidget {
         ),
       );
     }
-    return const Scaffold(body: KeadaanMemuat(pesan: 'Memuat katalog destinasi...'));
+    // Layar memuat berwarna sama dengan splash Android sehingga peralihannya tidak berkedip.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent),
+      child: Scaffold(
+        backgroundColor: WarnaJelma.hijau,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const TandaJelma(ukuran: 96, latar: null),
+              const SizedBox(height: 12),
+              Text(
+                'Memuat katalog destinasi...',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

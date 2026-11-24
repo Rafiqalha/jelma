@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Ikon status bar notifikasi: penanda lokasi (jalur Material "location_on"), putih polos sesuai aturan Android. -->
+<!-- Dibangun oleh tool/ikon/buat_ikon.py. Ikon notifikasi Android harus siluet putih polos. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M12,2C8.13,2 5,5.13 5,9c0,5.25 7,13 7,13s7,-7.75 7,-13c0,-3.87 -3.13,-7 -7,-7zM12,11.5c-1.38,0 -2.5,-1.12 -2.5,-2.5s1.12,-2.5 2.5,-2.5 2.5,1.12 2.5,2.5 -1.12,2.5 -2.5,2.5z" />
+    android:viewportWidth="56"
+    android:viewportHeight="56">
+    <group
+        android:translateX="-26"
+        android:translateY="-26">
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M56.51,66.41 L56.51,49.63 L64.91,44.03 L64.91,66.41 Z" />
+        <path
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="8.39"
+            android:strokeLineCap="round"
+            android:pathData="M60.71,66.41 A8.39,8.39 0 0 1 45.44,71.23" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M58.26,34.24 a5.24,5.24 0 1 0 10.49,0 a5.24,5.24 0 1 0 -10.49,0 Z" />
+    </group>
 </vector>

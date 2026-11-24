@@ -1,7 +1,7 @@
 name: uts_jelajah_malang
 description: "Jelajah Malang (JELMA): katalog destinasi wisata Malang Raya. UTS: katalog dan navigasi. UAS: lokasi dinamis, cuaca, rencana kunjungan, dan notifikasi."
 publish_to: 'none'
-version: 2.0.0+2
+version: 2.1.0+3
 
 environment:
   sdk: ^3.13.4
@@ -29,3 +29,20 @@ flutter:
 
   assets:
     - assets/data/destinasi.json
+    # Foto destinasi dari Wikimedia Commons; kredit lengkap ada di destinasi.json dan halaman Kredit foto.
+    - assets/images/destinasi/
+
+  # Plus Jakarta Sans oleh Tokotype, SIL Open Font License 1.1 (assets/fonts/OFL.txt).
+  fonts:
+    - family: PlusJakartaSans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/PlusJakartaSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/PlusJakartaSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/PlusJakartaSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/PlusJakartaSans-ExtraBold.ttf
+          weight: 800

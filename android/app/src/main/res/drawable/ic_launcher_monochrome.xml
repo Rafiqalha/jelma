@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dibangun oleh tool/ikon/buat_ikon.py; ubah geometri di skrip itu, bukan di berkas ini. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M56.51,66.41 L56.51,49.63 L64.91,44.03 L64.91,66.41 Z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="8.39"
+        android:strokeLineCap="round"
+        android:pathData="M60.71,66.41 A8.39,8.39 0 0 1 45.44,71.23" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M58.26,34.24 a5.24,5.24 0 1 0 10.49,0 a5.24,5.24 0 1 0 -10.49,0 Z" />
+</vector>

@@ -29,7 +29,7 @@ class KatalogDestinasi {
   final List<Kategori> kategori;
   final List<Destinasi> destinasi;
 
-  /// Versi struktur data; versi 2 menambah koordinat dan jenis ruang.
+  /// Versi struktur data; versi 2 menambah koordinat dan jenis ruang, versi 3 menambah foto berkredit.
   final int versi;
   final SumberKatalog sumber;
 
@@ -92,8 +92,9 @@ class LocalDestinasiRepository implements DestinasiRepository {
 /// Alamat berkas katalog pada repositori GitHub proyek.
 const String urlKatalogBawaan = 'https://raw.githubusercontent.com/Rafiqalha/jelma/main/assets/data/destinasi.json';
 
-/// Versi data terendah yang dimengerti aplikasi ini.
-const int versiKatalogMinimal = 2;
+/// Versi data terendah yang dipakai aplikasi ini. Katalog versi 2 belum memuat data foto,
+/// sehingga ditolak dan aplikasi beralih ke salinan tersimpan atau aset bawaan.
+const int versiKatalogMinimal = 3;
 
 /// Mengunduh katalog dari internet, lalu jatuh ke salinan tersimpan dan terakhir ke aset.
 ///

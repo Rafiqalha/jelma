@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../models/destinasi.dart';
 import '../models/format.dart';
-import '../models/gaya_kategori.dart';
 import '../models/rencana.dart';
 import '../state/cuaca_store.dart';
 import '../state/katalog_store.dart';
 import '../state/lokasi_store.dart';
 import '../state/rencana_store.dart';
 import '../state/store_scope.dart';
+import '../widgets/gambar_destinasi.dart';
 import '../widgets/keadaan_halaman.dart';
 
 /// Argumen halaman form: [ubah] untuk mengubah rencana yang ada, [destinasiAwal] untuk
@@ -48,6 +48,10 @@ class _RencanaFormPageState extends State<RencanaFormPage> {
   String? _galatWaktu;
   bool _siap = false;
   bool _menyimpan = false;
+
+  /// Penanda bagian waktu dan destinasi; form digulir ke bagian yang bermasalah saat gagal disimpan.
+  final GlobalKey _kunciWaktu = GlobalKey();
+  final GlobalKey _kunciDestinasi = GlobalKey();
 
   @override
   void didChangeDependencies() {
@@ -128,7 +132,20 @@ class _RencanaFormPageState extends State<RencanaFormPage> {
       _galatDestinasi = tanpaTujuan ? 'Pilih minimal satu destinasi.' : null;
       _galatWaktu = terlambat ? 'Waktu ini sudah lewat. Pilih tanggal atau jam yang akan datang.' : null;
     });
-    if (tanpaTujuan || terlambat) return;
+    if (tanpaTujuan || terlambat) {
+      // Pesan galat bisa berada di luar layar pada form yang panjang, jadi bagian itu digulir ke atas.
+      final tanpaAnimasi = MediaQuery.disableAnimationsOf(context);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final konteks = (terlambat ? _kunciWaktu : _kunciDestinasi).currentContext;
+        if (konteks == null || !konteks.mounted) return;
+        Scrollable.ensureVisible(
+          konteks,
+          alignment: 0.1,
+          duration: tanpaAnimasi ? Duration.zero : const Duration(milliseconds: 250),
+        );
+      });
+      return;
+    }
 
     setState(() => _menyimpan = true);
     final nama = _nama.text.trim().isEmpty ? _namaOtomatis(tujuan) : _nama.text.trim();
@@ -192,14 +209,15 @@ class _RencanaFormPageState extends State<RencanaFormPage> {
           TextField(
             controller: _nama,
             textInputAction: TextInputAction.next,
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
             decoration: const InputDecoration(
               labelText: 'Nama rencana (opsional)',
               hintText: 'Contoh: Akhir pekan di Batu',
-              border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
           Card(
+            key: _kunciWaktu,
             child: Column(
               children: [
                 ListTile(
@@ -228,19 +246,22 @@ class _RencanaFormPageState extends State<RencanaFormPage> {
           const SizedBox(height: 16),
           DropdownButtonFormField<Pengingat>(
             initialValue: _pengingat,
+            // Label pengingat terpanjang tidak muat di layar sempit; isExpanded membuatnya terpotong rapi.
+            isExpanded: true,
             decoration: const InputDecoration(
               labelText: 'Pengingat',
               prefixIcon: Icon(Icons.notifications_active_outlined),
-              border: OutlineInputBorder(),
             ),
             items: [
-              for (final p in Pengingat.values) DropdownMenuItem(value: p, child: Text(p.label)),
+              for (final p in Pengingat.values)
+                DropdownMenuItem(value: p, child: Text(p.label, overflow: TextOverflow.ellipsis)),
             ],
             onChanged: (p) => setState(() => _pengingat = p ?? _pengingat),
           ),
           const SizedBox(height: 24),
           Text(
             'Destinasi (${_terpilih.length} dipilih)',
+            key: _kunciDestinasi,
             style: tema.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 4),
@@ -250,10 +271,25 @@ class _RencanaFormPageState extends State<RencanaFormPage> {
                 : 'Destinasi yang sudah dipilih tampil paling atas; sisanya $urutanSisa.',
             style: tema.textTheme.bodySmall?.copyWith(color: skema.onSurfaceVariant),
           ),
+          // Pesan galat diletakkan di bawah judul bagian agar terlihat tanpa harus menggulir daftar.
+          if (_galatDestinasi != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  Icon(Icons.error_outline, size: 18, color: skema.error),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(_galatDestinasi!, style: tema.textTheme.bodyMedium?.copyWith(color: skema.error)),
+                  ),
+                ],
+              ),
+            ),
           const SizedBox(height: 12),
           TextField(
             controller: _cari,
             onChanged: (v) => setState(() => _kata = v),
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
             decoration: InputDecoration(
               labelText: 'Cari destinasi',
               prefixIcon: const Icon(Icons.search),
@@ -267,7 +303,6 @@ class _RencanaFormPageState extends State<RencanaFormPage> {
                         setState(() => _kata = '');
                       },
                     ),
-              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 8),
@@ -291,9 +326,9 @@ class _RencanaFormPageState extends State<RencanaFormPage> {
                         }
                         _galatDestinasi = null;
                       }),
-                      secondary: CircleAvatar(
-                        backgroundColor: warnaKategori(d.kategori).withValues(alpha: 0.14),
-                        child: Icon(ikonKategori(d.kategori), color: warnaKategori(d.kategori)),
+                      secondary: SizedBox.square(
+                        dimension: 48,
+                        child: GambarDestinasi(destinasi: d, ukuranIkon: 22, radius: BorderRadius.circular(12)),
                       ),
                       title: Text(d.nama),
                       subtitle: Text(
@@ -302,11 +337,6 @@ class _RencanaFormPageState extends State<RencanaFormPage> {
                     ),
                 ],
               ),
-            ),
-          if (_galatDestinasi != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8, left: 4),
-              child: Text(_galatDestinasi!, style: tema.textTheme.bodySmall?.copyWith(color: skema.error)),
             ),
         ],
       ),

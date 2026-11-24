@@ -57,6 +57,57 @@ enum Ruang {
       Ruang.values.firstWhere((r) => r.name == teks, orElse: () => Ruang.terbuka);
 }
 
+/// Foto asli destinasi beserta atribusinya (judul, pembuat, sumber, lisensi).
+///
+/// [berkas] berupa jalur aset aplikasi atau alamat `https`, sehingga katalog dari jaringan
+/// dapat menunjuk foto baru tanpa merilis ulang aplikasi.
+class FotoDestinasi {
+  const FotoDestinasi({
+    required this.berkas,
+    required this.judul,
+    required this.penulis,
+    required this.lisensi,
+    required this.urlLisensi,
+    required this.sumber,
+  });
+
+  final String berkas;
+
+  /// Judul berkas pada sumbernya, misalnya `Coban rondo waterfall.jpg`.
+  final String judul;
+  final String penulis;
+
+  /// Nama singkat lisensi, misalnya `CC BY-SA 4.0`.
+  final String lisensi;
+  final String urlLisensi;
+
+  /// Halaman sumber foto (Wikimedia Commons).
+  final String sumber;
+
+  bool get dariJaringan => berkas.startsWith('http://') || berkas.startsWith('https://');
+
+  /// Baris kredit singkat untuk ditampilkan di bawah foto.
+  String get kredit => 'Foto: $penulis, $lisensi';
+
+  factory FotoDestinasi.fromJson(Map<String, dynamic> json) => FotoDestinasi(
+        berkas: json['berkas'] as String,
+        judul: json['judul'] as String? ?? '',
+        penulis: json['penulis'] as String? ?? 'Tanpa nama',
+        lisensi: json['lisensi'] as String? ?? '',
+        urlLisensi: json['url_lisensi'] as String? ?? '',
+        sumber: json['sumber'] as String? ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        'berkas': berkas,
+        'judul': judul,
+        'penulis': penulis,
+        'lisensi': lisensi,
+        'url_lisensi': urlLisensi,
+        'sumber': sumber,
+      };
+}
+
 /// Satu destinasi wisata beserta informasi yang ditampilkan pada aplikasi.
 class Destinasi {
   const Destinasi({
@@ -73,6 +124,7 @@ class Destinasi {
     this.ruang = Ruang.terbuka,
     this.koordinatPerkiraan = false,
     this.populer = false,
+    this.foto,
   });
 
   final int id;
@@ -96,6 +148,9 @@ class Destinasi {
   /// Benar untuk hidangan yang tersebar di banyak tempat; titiknya hanya pusat area.
   final bool koordinatPerkiraan;
   final bool populer;
+
+  /// Foto asli; null bila belum ada foto berlisensi bebas yang benar menampilkan destinasi ini.
+  final FotoDestinasi? foto;
 
   bool get gratis => harga == 0;
 
@@ -127,6 +182,7 @@ class Destinasi {
         ruang: Ruang.dariTeks(json['ruang'] as String?),
         koordinatPerkiraan: json['koordinat_perkiraan'] as bool? ?? false,
         populer: json['populer'] as bool? ?? false,
+        foto: json['foto'] == null ? null : FotoDestinasi.fromJson(json['foto'] as Map<String, dynamic>),
       );
 
   Map<String, dynamic> toJson() => {
@@ -144,5 +200,6 @@ class Destinasi {
         'ruang': ruang.name,
         'koordinat_perkiraan': koordinatPerkiraan,
         'populer': populer,
+        'foto': foto?.toJson(),
       };
 }
