@@ -2,10 +2,26 @@ import 'package:flutter/material.dart';
 
 import '../data/destinasi_repository.dart';
 import '../models/destinasi.dart';
+import '../state/lokasi_store.dart';
+import '../state/store_scope.dart';
 import '../widgets/destinasi_card.dart';
+import '../widgets/keadaan_halaman.dart';
+import '../widgets/tombol_pengaturan.dart';
 
-/// Halaman Jelajah: daftar destinasi yang dapat disaring berdasarkan kategori
-/// dan kata kunci pencarian.
+/// Cara mengurutkan daftar pada halaman Jelajah.
+enum UrutanDaftar {
+  katalog('Urutan katalog'),
+  terdekat('Terdekat'),
+  ratingTertinggi('Rating tertinggi'),
+  nama('Nama A-Z');
+
+  const UrutanDaftar(this.label);
+
+  final String label;
+}
+
+/// Halaman Jelajah: daftar destinasi yang dapat disaring berdasarkan kategori, kata kunci,
+/// dan status buka, serta diurutkan menurut jarak, rating, atau nama.
 class JelajahPage extends StatefulWidget {
   const JelajahPage({
     super.key,
@@ -28,6 +44,8 @@ class _JelajahPageState extends State<JelajahPage> {
   final TextEditingController _controller = TextEditingController();
   final Map<String, GlobalKey> _kunciChip = {};
   String _kata = '';
+  UrutanDaftar _urutan = UrutanDaftar.katalog;
+  bool _bukaSaja = false;
 
   @override
   void didUpdateWidget(JelajahPage lama) {
@@ -56,17 +74,35 @@ class _JelajahPageState extends State<JelajahPage> {
     super.dispose();
   }
 
-  /// Destinasi yang cocok dengan kategori terpilih dan kata kunci pada nama atau lokasi.
-  List<Destinasi> get _hasil {
+  /// Destinasi yang cocok dengan kategori, kata kunci pada nama atau lokasi, dan status buka,
+  /// lalu diurutkan sesuai pilihan. Urutan terdekat memakai lokasi aktif; tanpa lokasi, urutan katalog dipakai.
+  List<Destinasi> _hasil(BuildContext context) {
     final kata = _kata.trim().toLowerCase();
-    return widget.katalog.destinasi.where((d) {
+    final sekarang = WaktuScope.baca(context);
+    final titik = StoreScope.of<LokasiStore>(context).aktif;
+    final hasil = widget.katalog.destinasi.where((d) {
       final cocokKategori =
           widget.kategoriTerpilih == 'semua' || d.kategori == widget.kategoriTerpilih;
       final cocokKata = kata.isEmpty ||
           d.nama.toLowerCase().contains(kata) ||
           d.lokasi.toLowerCase().contains(kata);
-      return cocokKategori && cocokKata;
+      final cocokBuka = !_bukaSaja || (d.statusPada(sekarang)?.terbuka ?? false);
+      return cocokKategori && cocokKata && cocokBuka;
     }).toList();
+    switch (_urutan) {
+      case UrutanDaftar.katalog:
+        break;
+      case UrutanDaftar.terdekat:
+        if (titik != null) hasil.sort((a, b) => a.jarakDari(titik)!.compareTo(b.jarakDari(titik)!));
+      case UrutanDaftar.ratingTertinggi:
+        hasil.sort((a, b) {
+          final banding = b.rating.compareTo(a.rating);
+          return banding != 0 ? banding : a.id.compareTo(b.id);
+        });
+      case UrutanDaftar.nama:
+        hasil.sort((a, b) => a.nama.toLowerCase().compareTo(b.nama.toLowerCase()));
+    }
+    return hasil;
   }
 
   Widget _chip(String id, String nama, IconData ikon) {
@@ -85,9 +121,11 @@ class _JelajahPageState extends State<JelajahPage> {
   @override
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
-    final hasil = _hasil;
+    final lokasi = StoreScope.of<LokasiStore>(context);
+    final hasil = _hasil(context);
+    final bisaUrutJarak = lokasi.aktif != null;
     return Scaffold(
-      appBar: AppBar(title: const Text('Jelajah')),
+      appBar: AppBar(title: const Text('Jelajah'), actions: const [TombolPengaturan()]),
       body: Column(
         children: [
           Padding(
@@ -97,7 +135,7 @@ class _JelajahPageState extends State<JelajahPage> {
               onChanged: (v) => setState(() => _kata = v),
               textInputAction: TextInputAction.search,
               decoration: InputDecoration(
-                hintText: 'Cari nama atau lokasi',
+                labelText: 'Cari nama atau lokasi',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _kata.isEmpty
                     ? null
@@ -134,6 +172,63 @@ class _JelajahPageState extends State<JelajahPage> {
               ],
             ),
           ),
+          // Penyaring status buka dan pengurutan berada pada baris sendiri agar tidak tersembunyi di ujung deretan chip.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
+            child: Row(
+              children: [
+                FilterChip(
+                  avatar: const Icon(Icons.schedule, size: 18),
+                  label: const Text('Buka sekarang'),
+                  selected: _bukaSaja,
+                  onSelected: (nilai) => setState(() => _bukaSaja = nilai),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: PopupMenuButton<UrutanDaftar>(
+                      tooltip: 'Urutkan daftar',
+                      initialValue: _urutan,
+                      onSelected: (nilai) => setState(() => _urutan = nilai),
+                      itemBuilder: (context) => [
+                        for (final u in UrutanDaftar.values)
+                          PopupMenuItem(
+                            value: u,
+                            enabled: u != UrutanDaftar.terdekat || bisaUrutJarak,
+                            child: Text(
+                              u == UrutanDaftar.terdekat && !bisaUrutJarak ? 'Terdekat (perlu lokasi)' : u.label,
+                            ),
+                          ),
+                      ],
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  _urutan == UrutanDaftar.terdekat && !bisaUrutJarak
+                                      ? UrutanDaftar.katalog.label
+                                      : _urutan.label,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: tema.textTheme.labelLarge,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.sort, size: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Align(
@@ -146,7 +241,13 @@ class _JelajahPageState extends State<JelajahPage> {
           ),
           Expanded(
             child: hasil.isEmpty
-                ? const _TidakAdaHasil()
+                ? KeadaanHalaman(
+                    ikon: Icons.search_off,
+                    judul: 'Tidak ada destinasi yang cocok',
+                    pesan: _bukaSaja
+                        ? 'Tidak ada destinasi yang buka sekarang dengan penyaring ini. Matikan Buka sekarang atau ubah kata kunci.'
+                        : 'Ubah kata kunci atau pilih kategori lain.',
+                  )
                 : LayoutBuilder(
                     builder: (context, batas) {
                       // Tata letak responsif: dua kolom pada layar lebar, satu kolom pada layar sempit.
@@ -173,33 +274,6 @@ class _JelajahPageState extends State<JelajahPage> {
                   ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _TidakAdaHasil extends StatelessWidget {
-  const _TidakAdaHasil();
-
-  @override
-  Widget build(BuildContext context) {
-    final tema = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.search_off, size: 64, color: tema.colorScheme.outline),
-            const SizedBox(height: 12),
-            Text('Tidak ada destinasi yang cocok', style: tema.textTheme.titleMedium),
-            const SizedBox(height: 4),
-            Text(
-              'Ubah kata kunci atau pilih kategori lain.',
-              style: tema.textTheme.bodyMedium?.copyWith(color: tema.colorScheme.onSurfaceVariant),
-            ),
-          ],
-        ),
       ),
     );
   }

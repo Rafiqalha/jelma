@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../models/destinasi.dart';
+import '../models/format.dart';
 import '../state/favorit_store.dart';
+import '../state/lokasi_store.dart';
+import '../state/store_scope.dart';
 import 'gambar_kategori.dart';
 
-/// Kartu ringkas satu destinasi: gambar kategori, nama, lokasi, rating, harga,
-/// dan tombol favorit. Mengetuk kartu membuka halaman detail.
+/// Kartu ringkas satu destinasi: gambar kategori dengan status buka, nama, jarak dan lokasi,
+/// rating, harga, dan tombol favorit. Mengetuk kartu membuka halaman detail.
 class DestinasiCard extends StatelessWidget {
   const DestinasiCard({super.key, required this.destinasi});
 
@@ -14,8 +17,12 @@ class DestinasiCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
-    final store = FavoritScope.of(context);
+    final skema = tema.colorScheme;
+    final store = StoreScope.of<FavoritStore>(context);
+    final lokasi = StoreScope.of<LokasiStore>(context);
     final favorit = store.apakahFavorit(destinasi.id);
+    final jarak = destinasi.jarakDari(lokasi.aktif);
+    final status = destinasi.statusPada(WaktuScope.baca(context));
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -28,9 +35,30 @@ class DestinasiCard extends StatelessWidget {
               SizedBox(
                 width: 88,
                 height: 88,
-                child: GambarKategori(
-                  kategori: destinasi.kategori,
-                  radius: BorderRadius.circular(12),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    GambarKategori(
+                      kategori: destinasi.kategori,
+                      radius: BorderRadius.circular(12),
+                    ),
+                    if (status != null)
+                      Positioned(
+                        left: 6,
+                        bottom: 6,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                          child: Text(
+                            status.singkat,
+                            style: tema.textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: status.terbuka ? skema.primary : skema.error,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
               const SizedBox(width: 12),
@@ -48,14 +76,18 @@ class DestinasiCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.place_outlined, size: 16, color: tema.colorScheme.onSurfaceVariant),
+                        Icon(
+                          jarak == null ? Icons.place_outlined : Icons.near_me_outlined,
+                          size: 16,
+                          color: skema.onSurfaceVariant,
+                        ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            destinasi.lokasi,
+                            jarak == null ? destinasi.lokasi : '${formatJarak(jarak)} · ${destinasi.lokasi}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: tema.textTheme.bodySmall?.copyWith(color: tema.colorScheme.onSurfaceVariant),
+                            style: tema.textTheme.bodySmall?.copyWith(color: skema.onSurfaceVariant),
                           ),
                         ),
                       ],
@@ -75,7 +107,7 @@ class DestinasiCard extends StatelessWidget {
                             destinasi.hargaLabel,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: tema.textTheme.labelLarge?.copyWith(color: tema.colorScheme.primary),
+                            style: tema.textTheme.labelLarge?.copyWith(color: skema.primary),
                           ),
                         ),
                       ],

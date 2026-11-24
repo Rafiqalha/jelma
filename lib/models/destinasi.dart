@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'format.dart';
+import 'jam_buka.dart';
+import 'koordinat.dart';
+
+export 'format.dart' show formatRibuan;
+
 /// Memetakan nama ikon pada JSON menjadi [IconData] Material.
 ///
 /// Dengan cara ini berkas JSON (atau respons API) cukup menyimpan teks,
@@ -14,18 +20,6 @@ const Map<String, IconData> _petaIkon = {
 
 /// Mengembalikan ikon untuk [nama]; ikon lokasi dipakai bila nama tidak dikenal.
 IconData ikonDariNama(String nama) => _petaIkon[nama] ?? Icons.place;
-
-/// Mengubah bilangan bulat menjadi teks dengan pemisah ribuan titik,
-/// misalnya `35000` menjadi `35.000`.
-String formatRibuan(int nilai) {
-  final teks = nilai.abs().toString();
-  final buffer = StringBuffer();
-  for (var i = 0; i < teks.length; i++) {
-    if (i > 0 && (teks.length - i) % 3 == 0) buffer.write('.');
-    buffer.write(teks[i]);
-  }
-  return nilai < 0 ? '-$buffer' : buffer.toString();
-}
 
 /// Kategori destinasi, misalnya Alam atau Kuliner.
 class Kategori {
@@ -48,6 +42,21 @@ class Kategori {
   Map<String, dynamic> toJson() => {'id': id, 'nama': nama, 'ikon': ikon};
 }
 
+/// Tempat kegiatan utama destinasi berlangsung; menentukan seberapa besar cuaca memengaruhinya.
+enum Ruang {
+  terbuka('Area terbuka'),
+  tertutup('Dalam ruangan'),
+  campuran('Dalam dan luar ruangan');
+
+  const Ruang(this.label);
+
+  final String label;
+
+  /// Nama yang tidak dikenal dianggap terbuka agar penilaian cuaca tetap berhati-hati.
+  static Ruang dariTeks(String? teks) =>
+      Ruang.values.firstWhere((r) => r.name == teks, orElse: () => Ruang.terbuka);
+}
+
 /// Satu destinasi wisata beserta informasi yang ditampilkan pada aplikasi.
 class Destinasi {
   const Destinasi({
@@ -60,6 +69,9 @@ class Destinasi {
     required this.harga,
     required this.jamBuka,
     required this.fasilitas,
+    required this.koordinat,
+    this.ruang = Ruang.terbuka,
+    this.koordinatPerkiraan = false,
     this.populer = false,
   });
 
@@ -76,6 +88,13 @@ class Destinasi {
   final int harga;
   final String jamBuka;
   final List<String> fasilitas;
+
+  /// Titik lokasi yang dipakai untuk jarak dan cuaca setempat.
+  final Koordinat koordinat;
+  final Ruang ruang;
+
+  /// Benar untuk hidangan yang tersebar di banyak tempat; titiknya hanya pusat area.
+  final bool koordinatPerkiraan;
   final bool populer;
 
   bool get gratis => harga == 0;
@@ -85,6 +104,14 @@ class Destinasi {
 
   /// Judul bidang harga; kuliner memakai "Kisaran harga" dan lainnya "Tiket masuk".
   String get judulHarga => kategori == 'kuliner' ? 'Kisaran harga' : 'Tiket masuk';
+
+  /// Jam buka yang sudah diurai; null bila teksnya tidak berbentuk `07.00 - 16.00`.
+  JamBuka? get jam => JamBuka.baca(jamBuka);
+
+  StatusBuka? statusPada(DateTime waktuWib) => jam?.status(waktuWib);
+
+  /// Jarak garis lurus dari [titik] dalam kilometer; null bila [titik] belum diketahui.
+  double? jarakDari(Koordinat? titik) => titik?.jarakKm(koordinat);
 
   factory Destinasi.fromJson(Map<String, dynamic> json) => Destinasi(
         id: json['id'] as int,
@@ -96,6 +123,9 @@ class Destinasi {
         harga: json['harga'] as int,
         jamBuka: json['jam_buka'] as String,
         fasilitas: List<String>.from(json['fasilitas'] as List),
+        koordinat: Koordinat((json['lat'] as num).toDouble(), (json['lng'] as num).toDouble()),
+        ruang: Ruang.dariTeks(json['ruang'] as String?),
+        koordinatPerkiraan: json['koordinat_perkiraan'] as bool? ?? false,
         populer: json['populer'] as bool? ?? false,
       );
 
@@ -109,6 +139,10 @@ class Destinasi {
         'harga': harga,
         'jam_buka': jamBuka,
         'fasilitas': fasilitas,
+        'lat': koordinat.lintang,
+        'lng': koordinat.bujur,
+        'ruang': ruang.name,
+        'koordinat_perkiraan': koordinatPerkiraan,
         'populer': populer,
       };
 }

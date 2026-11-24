@@ -1,7 +1,7 @@
 name: uts_jelajah_malang
-description: "Jelajah Malang: aplikasi katalog destinasi wisata Malang Raya untuk UTS Mobile Programming."
+description: "Jelajah Malang (JELMA): katalog destinasi wisata Malang Raya. UTS: katalog dan navigasi. UAS: lokasi dinamis, cuaca, rencana kunjungan, dan notifikasi."
 publish_to: 'none'
-version: 1.0.0+1
+version: 2.0.0+2
 
 environment:
   sdk: ^3.13.4
@@ -9,6 +9,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  http: ^1.6.0
+  geolocator: ^14.1.2
+  geocoding: ^5.0.1
+  shared_preferences: ^2.5.6
+  flutter_local_notifications: ^23.0.4
+  timezone: ^0.11.2
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:

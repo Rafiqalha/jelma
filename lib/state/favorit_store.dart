@@ -1,7 +1,19 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Menyimpan identitas destinasi favorit dan memberi tahu tampilan saat berubah.
+///
+/// Bila [penyimpanan] diberikan, daftar dibaca saat dibuat dan ditulis setiap kali berubah,
+/// sehingga favorit bertahan setelah aplikasi ditutup.
 class FavoritStore extends ChangeNotifier {
+  FavoritStore({SharedPreferences? penyimpanan}) : _penyimpanan = penyimpanan {
+    final tersimpan = penyimpanan?.getStringList(_kunci) ?? const <String>[];
+    _ids.addAll(tersimpan.map(int.tryParse).whereType<int>());
+  }
+
+  static const String _kunci = 'favorit_ids';
+
+  final SharedPreferences? _penyimpanan;
   final Set<int> _ids = {};
 
   bool apakahFavorit(int id) => _ids.contains(id);
@@ -11,19 +23,7 @@ class FavoritStore extends ChangeNotifier {
   /// Menambahkan destinasi ke favorit, atau menghapusnya bila sudah ada.
   void toggle(int id) {
     if (!_ids.remove(id)) _ids.add(id);
+    _penyimpanan?.setStringList(_kunci, [for (final i in _ids) '$i']);
     notifyListeners();
-  }
-}
-
-/// Menyediakan [FavoritStore] kepada seluruh halaman di bawahnya.
-class FavoritScope extends InheritedNotifier<FavoritStore> {
-  const FavoritScope({super.key, required FavoritStore store, required super.child})
-      : super(notifier: store);
-
-  /// Mengambil store terdekat dan mendaftarkan [context] agar dibangun ulang saat berubah.
-  static FavoritStore of(BuildContext context) {
-    final scope = context.dependOnInheritedWidgetOfExactType<FavoritScope>();
-    assert(scope != null, 'FavoritScope tidak ditemukan pada pohon widget');
-    return scope!.notifier!;
   }
 }

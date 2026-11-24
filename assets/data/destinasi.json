@@ -1,6 +1,6 @@
 {
-  "versi": 1,
-  "keterangan": "Data contoh (dummy) untuk UTS Mobile Programming. Struktur dibuat agar dapat diganti dengan respons API.",
+  "versi": 2,
+  "keterangan": "Rating, harga, dan jam buka adalah data contoh (dummy). Koordinat diambil dari OpenStreetMap. Struktur dibuat agar dapat diganti dengan respons API.",
   "kategori": [
     { "id": "alam", "nama": "Alam", "ikon": "terrain" },
     { "id": "budaya", "nama": "Budaya", "ikon": "museum" },
@@ -18,6 +18,9 @@
       "harga": 35000,
       "jam_buka": "07.00 - 16.00",
       "fasilitas": ["Parkir", "Toilet", "Musala", "Warung makan"],
+      "lat": -7.86962,
+      "lng": 112.48397,
+      "ruang": "terbuka",
       "populer": true
     },
     {
@@ -30,18 +33,24 @@
       "harga": 20000,
       "jam_buka": "06.00 - 17.00",
       "fasilitas": ["Parkir", "Toilet", "Penginapan", "Warung makan"],
+      "lat": -8.40331,
+      "lng": 112.53977,
+      "ruang": "terbuka",
       "populer": true
     },
     {
       "id": 3,
       "nama": "Coban Pelangi",
       "kategori": "alam",
-      "lokasi": "Tumpang, Kabupaten Malang",
+      "lokasi": "Poncokusumo, Kabupaten Malang",
       "deskripsi": "Air terjun di tengah perbukitan yang kerap menampilkan bias pelangi saat cuaca cerah. Jalur menuju lokasi cukup singkat dan mudah dilalui.",
       "rating": 4.4,
       "harga": 15000,
       "jam_buka": "07.00 - 16.00",
       "fasilitas": ["Parkir", "Toilet", "Gazebo"],
+      "lat": -8.01085,
+      "lng": 112.86572,
+      "ruang": "terbuka",
       "populer": false
     },
     {
@@ -54,6 +63,9 @@
       "harga": 5000,
       "jam_buka": "08.00 - 17.00",
       "fasilitas": ["Parkir", "Toilet", "Spot foto"],
+      "lat": -7.98335,
+      "lng": 112.63774,
+      "ruang": "terbuka",
       "populer": true
     },
     {
@@ -66,6 +78,9 @@
       "harga": 5000,
       "jam_buka": "07.00 - 16.00",
       "fasilitas": ["Parkir", "Toilet", "Pemandu"],
+      "lat": -7.88774,
+      "lng": 112.66391,
+      "ruang": "terbuka",
       "populer": false
     },
     {
@@ -78,6 +93,9 @@
       "harga": 10000,
       "jam_buka": "08.00 - 16.00",
       "fasilitas": ["Parkir", "Toilet", "Pemandu", "Ruang pamer"],
+      "lat": -7.97199,
+      "lng": 112.62098,
+      "ruang": "tertutup",
       "populer": false
     },
     {
@@ -90,6 +108,10 @@
       "harga": 15000,
       "jam_buka": "09.00 - 21.00",
       "fasilitas": ["Makan di tempat", "Dibawa pulang"],
+      "lat": -7.98261,
+      "lng": 112.63082,
+      "koordinat_perkiraan": true,
+      "ruang": "tertutup",
       "populer": true
     },
     {
@@ -102,6 +124,10 @@
       "harga": 18000,
       "jam_buka": "08.00 - 20.00",
       "fasilitas": ["Makan di tempat", "Dibawa pulang"],
+      "lat": -7.98261,
+      "lng": 112.63082,
+      "koordinat_perkiraan": true,
+      "ruang": "tertutup",
       "populer": false
     },
     {
@@ -114,6 +140,10 @@
       "harga": 25000,
       "jam_buka": "10.00 - 21.00",
       "fasilitas": ["Makan di tempat", "Dibawa pulang", "Parkir"],
+      "lat": -7.98261,
+      "lng": 112.63082,
+      "koordinat_perkiraan": true,
+      "ruang": "tertutup",
       "populer": false
     },
     {
@@ -126,6 +156,9 @@
       "harga": 100000,
       "jam_buka": "12.00 - 20.00",
       "fasilitas": ["Parkir", "Toilet", "Musala", "Restoran"],
+      "lat": -7.87883,
+      "lng": 112.52014,
+      "ruang": "campuran",
       "populer": true
     },
     {
@@ -138,6 +171,9 @@
       "harga": 90000,
       "jam_buka": "09.00 - 17.00",
       "fasilitas": ["Parkir", "Toilet", "Musala", "Restoran", "Loker"],
+      "lat": -7.88425,
+      "lng": 112.52470,
+      "ruang": "campuran",
       "populer": false
     },
     {
@@ -150,6 +186,114 @@
       "harga": 25000,
       "jam_buka": "09.00 - 16.00",
       "fasilitas": ["Parkir", "Toilet", "Ruang pamer"],
+      "lat": -7.98833,
+      "lng": 112.62666,
+      "ruang": "tertutup",
+      "populer": false
+    },
+    {
+      "id": 13,
+      "nama": "Selecta",
+      "kategori": "alam",
+      "lokasi": "Tulungrejo, Kota Batu",
+      "deskripsi": "Taman rekreasi di lereng pegunungan Batu dengan taman bunga, kolam renang, dan udara sejuk. Cocok untuk bersantai bersama keluarga.",
+      "rating": 4.4,
+      "harga": 50000,
+      "jam_buka": "07.00 - 17.00",
+      "fasilitas": ["Parkir", "Toilet", "Musala", "Restoran", "Penginapan"],
+      "lat": -7.81915,
+      "lng": 112.52597,
+      "ruang": "terbuka",
+      "populer": false
+    },
+    {
+      "id": 14,
+      "nama": "Coban Rais",
+      "kategori": "alam",
+      "lokasi": "Tlekung, Kota Batu",
+      "deskripsi": "Air terjun di tengah hutan pinus yang dicapai dengan berjalan kaki melalui jalur tanah. Jalurnya bisa licin saat hujan.",
+      "rating": 4.3,
+      "harga": 20000,
+      "jam_buka": "07.00 - 16.00",
+      "fasilitas": ["Parkir", "Toilet", "Musala", "Warung makan"],
+      "lat": -7.91491,
+      "lng": 112.50572,
+      "ruang": "terbuka",
+      "populer": false
+    },
+    {
+      "id": 15,
+      "nama": "Pantai Tiga Warna",
+      "kategori": "alam",
+      "lokasi": "Sumbermanjing Wetan, Kabupaten Malang",
+      "deskripsi": "Pantai di pesisir selatan dengan air laut berwarna kehijauan dan kebiruan. Kunjungan diatur pengelola setempat sehingga pengunjung perlu mengikuti aturan yang berlaku.",
+      "rating": 4.6,
+      "harga": 30000,
+      "jam_buka": "08.00 - 15.00",
+      "fasilitas": ["Parkir", "Toilet", "Pemandu", "Warung makan"],
+      "lat": -8.44413,
+      "lng": 112.67156,
+      "ruang": "terbuka",
+      "populer": false
+    },
+    {
+      "id": 16,
+      "nama": "Candi Jago",
+      "kategori": "budaya",
+      "lokasi": "Tumpang, Kabupaten Malang",
+      "deskripsi": "Candi peninggalan masa Kerajaan Singasari dengan relief cerita pada dindingnya. Halamannya teduh dan cocok untuk wisata sejarah singkat.",
+      "rating": 4.2,
+      "harga": 5000,
+      "jam_buka": "07.00 - 16.00",
+      "fasilitas": ["Parkir", "Toilet", "Pemandu"],
+      "lat": -8.00580,
+      "lng": 112.76413,
+      "ruang": "terbuka",
+      "populer": false
+    },
+    {
+      "id": 17,
+      "nama": "Alun-alun Tugu Malang",
+      "kategori": "budaya",
+      "lokasi": "Klojen, Kota Malang",
+      "deskripsi": "Taman kota di depan Balai Kota Malang dengan Tugu sebagai penanda. Ramai pada sore dan malam hari.",
+      "rating": 4.5,
+      "harga": 0,
+      "jam_buka": "00.00 - 00.00",
+      "fasilitas": ["Toilet", "Area duduk"],
+      "lat": -7.97675,
+      "lng": 112.63449,
+      "ruang": "terbuka",
+      "populer": false
+    },
+    {
+      "id": 18,
+      "nama": "Kayutangan Heritage",
+      "kategori": "budaya",
+      "lokasi": "Klojen, Kota Malang",
+      "deskripsi": "Kawasan jalan dan kampung tua di pusat kota dengan bangunan bergaya kolonial dan rumah lama yang ditata untuk pengunjung.",
+      "rating": 4.4,
+      "harga": 5000,
+      "jam_buka": "08.00 - 21.00",
+      "fasilitas": ["Parkir", "Toilet", "Spot foto", "Kafe"],
+      "lat": -7.98082,
+      "lng": 112.62760,
+      "ruang": "terbuka",
+      "populer": false
+    },
+    {
+      "id": 19,
+      "nama": "Museum Mpu Purwa",
+      "kategori": "budaya",
+      "lokasi": "Lowokwaru, Kota Malang",
+      "deskripsi": "Museum arkeologi yang menyimpan arca dan benda peninggalan masa Hindu-Buddha dari wilayah Malang Raya.",
+      "rating": 4.1,
+      "harga": 5000,
+      "jam_buka": "08.00 - 15.00",
+      "fasilitas": ["Parkir", "Toilet", "Pemandu", "Ruang pamer"],
+      "lat": -7.94032,
+      "lng": 112.62086,
+      "ruang": "tertutup",
       "populer": false
     }
   ]
